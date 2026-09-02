@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "./supabase";
 import type { User } from "@supabase/supabase-js";
@@ -70,8 +69,8 @@ const translations = {
     private_messages_title: "الرسائل الخاصة",
     no_dm_yet: "ما عندكش رسائل خاصة بعد.",
     back_to_messages: "رجوع",
-    start_conversation: "ابدا المحادثة...",
-    back_to_my_profile: "← رجوع لبروفايلي",
+    start_conversation: "...ابدا المحادثة",
+    back_to_my_profile: "رجوع لبروفايلي →",
     tap_photo_to_change: "دوس على الصورة باش تبدلها",
     stat_posts: "منشورات",
     stat_videos: "فيديوهات",
@@ -83,20 +82,20 @@ const translations = {
     bio_placeholder: "اكتب نبذة قصيرة عن نفسك...",
     cancel: "إلغاء",
     saving: "جاري الحفظ...",
-    back: "← رجوع",
+    back: "رجوع ←",
     change_password_title: "تغيير كلمة السر",
     new_password_placeholder: "كلمة سر جديدة",
     password_too_short: "كلمة السر لازم تكون 6 حروف على الأقل",
-    password_changed_success: "تبدلت كلمة السر بنجاح ✓",
+    password_changed_success: "✓ تبدلت كلمة السر بنجاح",
     save_password_button: "حفظ كلمة السر",
     change_email_title: "تغيير البريد الإلكتروني",
     new_email_placeholder: "بريد إلكتروني جديد",
-    email_change_confirm_msg: "تفقد بريدك الإلكتروني لتأكيد التغيير ✓",
+    email_change_confirm_msg: "✓ تفقد بريدك الإلكتروني لتأكيد التغيير",
     save_email_button: "حفظ البريد الجديد",
     delete_account_title: "حذف الحساب",
-    delete_account_warning: "هذا يمسح بروفايلك وكل منشوراتك وفيديوهاتك ورسائلك وتعليقاتك نهائيًا.",
+    delete_account_warning: "هذا يمسح بروفايلك وكل منشوراتك وفيديوهاتك ورسائلك وتعليقاتك نهائياً.",
     delete_confirm_warning: "متأكد؟ هذا الإجراء ما يمكن التراجع فيه.",
-    delete_confirm_button: "نعم، احذف حسابي نهائيًا",
+    delete_confirm_button: "نعم، احذف حسابي نهائياً",
     deleting: "جاري الحذف...",
     send_message_button: "إرسال رسالة",
     language_label: "اللغة",
@@ -113,7 +112,7 @@ const translations = {
     premium_content_title: "محتوى Premium",
     premium_content_desc: "هذا المنشور متاح لأعضاء Premium بس",
     unlock_premium_button: "افتح Premium",
-    search_placeholder: "ابحث عن محادثة...",
+    search_placeholder: "...ابحث عن محادثة",
     messages_empty_search: "ما لقيت نتائج",
     communities_title: "المجتمعات",
     create_community: "إنشاء مجتمع",
@@ -122,9 +121,9 @@ const translations = {
     community_color: "لون المجتمع",
     community_private: "مجتمع خاص (يحتاج موافقة)",
     creating: "جاري الإنشاء...",
-    no_communities: "ما فيه مجتمعات بعد، كن أول من يضيف!",
-    join_request_sent: "تم إرسال طلب الانضمام ✓",
-    already_member: "أنت عضو ✓",
+    no_communities: "!ما فيه مجتمعات بعد، كن أول من يضيف",
+    join_request_sent: "✓ تم إرسال طلب الانضمام",
+    already_member: "✓ أنت عضو",
     pending_approval: "في انتظار الموافقة...",
     join_community: "انضمام للمجتمع",
     members_count: "عضو",
@@ -134,7 +133,7 @@ const translations = {
     reject: "رفض",
     no_pending: "ما فيه طلبات معلقة",
     premium_required: "💎 يحتاج Premium لإنشاء مجتمع",
-    back_to_communities: "← رجوع للمجتمعات",
+    back_to_communities: "للمجتمعات ←",
     enter_community: "دخول",
     community_members: "الأعضاء",
     game_name_label: "اسم اللعبة",
@@ -149,7 +148,6 @@ const translations = {
     sport_type_label: "الرياضة",
     sport_team_label: "الفريق",
     sport_content_label: "نوع المحتوى",
-    // إشعارات
     notifications_title: "الإشعارات",
     no_notifications: "ما فيه إشعارات بعد",
     mark_all_read: "تعيين الكل كمقروء",
@@ -157,9 +155,9 @@ const translations = {
     notif_like_video: "أعجبه فيديوك",
     notif_comment_post: "علّق على منشورك",
     notif_comment_video: "علّق على فيديوك",
-    notif_dm: "أرسل لك رسالة خاصة",
+    notif_dm: "أرسلك رسالة خاصة",
     notif_join_request: "طلب الانضمام لمجتمعك",
-    notif_join_approved: "تمت الموافقة على طلبك ✓",
+    notif_join_approved: "✓ تمت الموافقة على طلبك",
     notif_join_rejected: "تم رفض طلبك",
     just_now: "الآن",
     minutes_ago: "د",
@@ -266,7 +264,7 @@ const translations = {
     approve: "Approve",
     reject: "Reject",
     no_pending: "No pending requests",
-    premium_required: "💎 Premium required",
+    premium_required: "💎 Premium required to create",
     back_to_communities: "← Back",
     enter_community: "Enter",
     community_members: "Members",
@@ -432,13 +430,18 @@ const translations = {
   },
 } as const;
 
+// ===== Avatar Component =====
 function Avatar({ name, avatarUrl, size = 32, onClick }: { name: string; avatarUrl?: string | null; size?: number; onClick?: () => void }) {
   if (avatarUrl) return <img src={avatarUrl} onClick={onClick} style={{ width: size, height: size, minWidth: size, borderRadius: "50%", objectFit: "cover", cursor: onClick ? "pointer" : "default", flexShrink: 0 }} />;
   return <div onClick={onClick} style={{ width: size, height: size, minWidth: size, borderRadius: "50%", background: "linear-gradient(135deg, #9B6BFF, #FF3D8A)", color: "white", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: "bold", fontSize: Math.round(size * 0.45), cursor: onClick ? "pointer" : "default", flexShrink: 0 }}>{name.charAt(0).toUpperCase()}</div>;
 }
 
-// ===== مكون الإشعار المنبثق =====
-function ToastNotification({ notif, onClose }: { notif: Notification & { fromUsername: string; fromAvatar: string | null }; onClose: () => void }) {
+// ===== Toast Notification — مع دعم RTL/LTR =====
+function ToastNotification({ notif, onClose, dir }: {
+  notif: Notification & { fromUsername: string; fromAvatar: string | null };
+  onClose: () => void;
+  dir: "rtl" | "ltr";
+}) {
   useEffect(() => {
     const timer = setTimeout(onClose, 4000);
     return () => clearTimeout(timer);
@@ -449,15 +452,28 @@ function ToastNotification({ notif, onClose }: { notif: Notification & { fromUse
     dm: "✉️", join_request: "👥", join_approved: "✅", join_rejected: "❌",
   };
 
+  const slideFrom = dir === "rtl" ? "-100%" : "100%";
+
   return (
     <div style={{
-      position: "fixed", top: "20px", right: "20px", zIndex: 9999,
-      background: "#1A1826", border: "1px solid #2E2A42", borderRadius: "14px",
-      padding: "14px 16px", display: "flex", alignItems: "center", gap: "12px",
-      boxShadow: "0 8px 32px rgba(0,0,0,0.5)", minWidth: "280px", maxWidth: "340px",
-      animation: "slideIn 0.3s ease",
+      position: "fixed",
+      top: "80px",
+      ...(dir === "rtl" ? { left: "20px", right: "auto" } : { right: "20px", left: "auto" }),
+      zIndex: 9999,
+      background: "#1A1826",
+      border: "1px solid #2E2A42",
+      borderRadius: "14px",
+      padding: "14px 16px",
+      display: "flex",
+      alignItems: "center",
+      gap: "12px",
+      boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
+      minWidth: "280px",
+      maxWidth: "340px",
+      animation: "toastSlideIn 0.3s ease",
+      direction: dir,
     }}>
-      <style>{`@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }`}</style>
+      <style>{`@keyframes toastSlideIn { from { transform: translateX(${slideFrom}); opacity: 0; } to { transform: translateX(0); opacity: 1; } }`}</style>
       <div style={{ fontSize: "24px" }}>{icons[notif.type] || "🔔"}</div>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ color: "white", fontSize: "13px", fontWeight: "bold", marginBottom: "2px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
@@ -470,6 +486,7 @@ function ToastNotification({ notif, onClose }: { notif: Notification & { fromUse
   );
 }
 
+// ===== Main Component =====
 export default function Home() {
   const [language, setLanguage] = useState<Lang>("ar");
   const dir = language === "ar" ? "rtl" : "ltr";
@@ -510,8 +527,6 @@ export default function Home() {
   const [newEditType, setNewEditType] = useState(""); const [newEditSoftware, setNewEditSoftware] = useState(""); const [newEditLevel, setNewEditLevel] = useState("");
   const [newMoviesGenre, setNewMoviesGenre] = useState(""); const [newMoviesSource, setNewMoviesSource] = useState(""); const [newMoviesLanguage, setNewMoviesLanguage] = useState("");
   const [newSportType, setNewSportType] = useState(""); const [newSportTeam, setNewSportTeam] = useState(""); const [newSportContent, setNewSportContent] = useState("");
-
-  // ===== حالات الإشعارات =====
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const [toastNotif, setToastNotif] = useState<(Notification & { fromUsername: string; fromAvatar: string | null }) | null>(null);
@@ -521,7 +536,6 @@ export default function Home() {
   const unreadDmCount = user ? directMessages.filter((m) => m.recipient_id === user.id).length : 0;
   const unreadNotifCount = notifications.filter((n) => !n.is_read).length;
 
-  // ===== دالة وقت نسبي =====
   function timeAgo(dateStr: string): string {
     const diff = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000);
     if (diff < 60) return t("just_now");
@@ -530,9 +544,8 @@ export default function Home() {
     return `${Math.floor(diff / 86400)}${t("days_ago")}`;
   }
 
-  // ===== إنشاء إشعار =====
   async function createNotification(userId: string, fromUserId: string, type: string, message: string, relatedId?: number) {
-    if (userId === fromUserId) return; // ما نرسلش إشعار لنفسك
+    if (userId === fromUserId) return;
     await supabase.from("notifications").insert({ user_id: userId, from_user_id: fromUserId, type, message, related_id: relatedId || null });
   }
 
@@ -559,7 +572,6 @@ export default function Home() {
     }
   }, [profiles, user]);
 
-  // اشتراك الرسائل الفوري
   useEffect(() => {
     if (!user) return;
     const ch = supabase.channel("messages-rt").on("postgres_changes", { event: "INSERT", schema: "public", table: "messages" }, (payload) => {
@@ -569,7 +581,6 @@ export default function Home() {
     return () => { supabase.removeChannel(ch); };
   }, [user]);
 
-  // اشتراك DM الفوري
   useEffect(() => {
     if (!user) return;
     const ch = supabase.channel("dm-rt").on("postgres_changes", { event: "INSERT", schema: "public", table: "direct_messages" }, (payload) => {
@@ -579,7 +590,6 @@ export default function Home() {
     return () => { supabase.removeChannel(ch); };
   }, [user]);
 
-  // ===== اشتراك الإشعارات الفوري =====
   useEffect(() => {
     if (!user) return;
     const ch = supabase.channel("notif-rt")
@@ -587,7 +597,6 @@ export default function Home() {
         (payload) => {
           const n = payload.new as Notification;
           setNotifications((prev) => prev.some((x) => x.id === n.id) ? prev : [n, ...prev]);
-          // إظهار popup
           const fromUsername = profiles.find((p) => p.id === n.from_user_id)?.username || "?";
           const fromAvatar = profiles.find((p) => p.id === n.from_user_id)?.avatar_url || null;
           setToastNotif({ ...n, fromUsername, fromAvatar });
@@ -600,7 +609,6 @@ export default function Home() {
     if (dmMessagesEndRef.current) dmMessagesEndRef.current.scrollIntoView({ behavior: "smooth" });
   }, [activeDmUserId, directMessages]);
 
-  // إغلاق قائمة الإشعارات عند الضغط خارجها
   useEffect(() => {
     function handleClick(e: MouseEvent) {
       if (notifPanelRef.current && !notifPanelRef.current.contains(e.target as Node)) {
@@ -785,7 +793,6 @@ export default function Home() {
     setNewVideoTitle(""); setVideoFile(null); setUploading(false); fetchVideos();
   }
 
-  // ===== لايك منشور مع إشعار =====
   async function togglePostLike(postId: number) {
     if (!user) return;
     const ex = postLikes.find((l) => l.post_id === postId && l.user_id === user.id);
@@ -793,14 +800,12 @@ export default function Home() {
       await supabase.from("post_likes").delete().eq("id", ex.id);
     } else {
       await supabase.from("post_likes").insert({ post_id: postId, user_id: user.id });
-      // إشعار لصاحب المنشور
       const post = posts.find((p) => p.id === postId);
       if (post?.user_id) await createNotification(post.user_id, user.id, "like_post", `${usernameFor(user.id)} ${t("notif_like_post")}`, postId);
     }
     fetchPostLikes();
   }
 
-  // ===== لايك فيديو مع إشعار =====
   async function toggleVideoLike(videoId: number) {
     if (!user) return;
     const ex = videoLikes.find((l) => l.video_id === videoId && l.user_id === user.id);
@@ -814,7 +819,6 @@ export default function Home() {
     fetchVideoLikes();
   }
 
-  // ===== تعليق منشور مع إشعار =====
   async function addPostComment(postId: number) {
     if (!user) return;
     const text = (newPostCommentText[postId] || "").trim();
@@ -825,7 +829,6 @@ export default function Home() {
     setNewPostCommentText((prev) => ({ ...prev, [postId]: "" })); fetchPostComments();
   }
 
-  // ===== تعليق فيديو مع إشعار =====
   async function addVideoComment(videoId: number) {
     if (!user) return;
     const text = (newVideoCommentText[videoId] || "").trim();
@@ -868,9 +871,8 @@ export default function Home() {
     return directMessages.filter((m) => (m.sender_id === user.id && m.recipient_id === otherId) || (m.sender_id === otherId && m.recipient_id === user.id)).sort((a, b) => a.id - b.id);
   }
 
-  function lastDmWith(otherId: string) { const t = dmThreadWith(otherId); return t[t.length - 1]; }
+  function lastDmWith(otherId: string) { const thread = dmThreadWith(otherId); return thread[thread.length - 1]; }
 
-  // ===== إرسال DM مع إشعار =====
   async function sendDirectMessage() {
     if (!user || !activeDmUserId || !newDmText.trim()) return;
     setSendingDm(true);
@@ -885,7 +887,6 @@ export default function Home() {
     return partners.filter((id) => usernameFor(id).toLowerCase().includes(dmSearch.toLowerCase()));
   }
 
-  // ===== إنشاء مجتمع =====
   async function createCommunity() {
     if (!user || !myProfile?.is_premium || !newCommunityName.trim()) return;
     setCreatingCommunity(true);
@@ -910,7 +911,6 @@ export default function Home() {
     setCreatingCommunity(false);
   }
 
-  // ===== انضمام مجتمع مع إشعار =====
   async function joinCommunity(communityId: number) {
     if (!user) return;
     await supabase.from("community_members").insert({ community_id: communityId, user_id: user.id, status: "pending" });
@@ -919,7 +919,6 @@ export default function Home() {
     fetchCommunityMembers();
   }
 
-  // ===== قبول عضو مع إشعار =====
   async function approveMember(memberId: number) {
     const member = communityMembers.find((m) => m.id === memberId);
     await supabase.from("community_members").update({ status: "approved" }).eq("id", memberId);
@@ -927,7 +926,6 @@ export default function Home() {
     fetchCommunityMembers();
   }
 
-  // ===== رفض عضو مع إشعار =====
   async function rejectMember(memberId: number) {
     const member = communityMembers.find((m) => m.id === memberId);
     await supabase.from("community_members").delete().eq("id", memberId);
@@ -939,9 +937,9 @@ export default function Home() {
   const messagesForSection = messages.filter((m) => m.section_id === selectedSubId);
   const videosForSection = videos.filter((v) => v.section_id === selectedSubId);
   const communitiesForSection = communities.filter((c) => c.section_id === selectedId);
+
   const inputStyle = { width: "100%", padding: "10px 14px", borderRadius: "10px", border: "1px solid #1E1B2E", background: "#1A1726", color: "white", fontSize: "14px", outline: "none", boxSizing: "border-box" as const };
   const selectStyle = { ...inputStyle, cursor: "pointer" };
-
   const notifIcons: Record<string, string> = { like_post: "❤️", like_video: "❤️", comment_post: "💬", comment_video: "💬", dm: "✉️", join_request: "👥", join_approved: "✅", join_rejected: "❌" };
 
   if (authLoading) return <main style={{ background: "#100F17", minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}><div style={{ color: "#9C97B8" }}>{t("loading")}</div></main>;
@@ -981,11 +979,12 @@ export default function Home() {
   return (
     <main style={{ background: "#100F17", minHeight: "100vh", padding: "40px", direction: dir }}>
 
-      {/* ===== Toast Notification ===== */}
+      {/* Toast — مع dir */}
       {toastNotif && (
         <ToastNotification
           notif={toastNotif}
           onClose={() => setToastNotif(null)}
+          dir={dir}
         />
       )}
 
@@ -1012,10 +1011,23 @@ export default function Home() {
               )}
             </button>
 
-            {/* قائمة الإشعارات */}
+            {/* ===== قائمة الإشعارات — التعديل الرئيسي ===== */}
             {showNotifications && (
-              <div style={{ position: "absolute", top: "46px", right: "0", width: "340px", background: "#13111E", border: "1px solid #1E1B2E", borderRadius: "16px", boxShadow: "0 8px 40px rgba(0,0,0,0.6)", zIndex: 2000, overflow: "hidden" }}>
-                {/* هيدر */}
+              <div style={{
+                position: "absolute",
+                top: "46px",
+                // ← هنا التعديل: يتغير حسب اللغة
+                ...(dir === "rtl" ? { left: "0", right: "auto" } : { right: "0", left: "auto" }),
+                width: "340px",
+                background: "#13111E",
+                border: "1px solid #1E1B2E",
+                borderRadius: "16px",
+                boxShadow: "0 8px 40px rgba(0,0,0,0.6)",
+                zIndex: 2000,
+                overflow: "hidden",
+                direction: dir,
+              }}>
+                {/* هيدر القائمة */}
                 <div style={{ padding: "16px", borderBottom: "1px solid #1E1B2E", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                   <span style={{ color: "white", fontWeight: "bold", fontSize: "16px" }}>{t("notifications_title")}</span>
                   {unreadNotifCount > 0 && (
@@ -1023,7 +1035,7 @@ export default function Home() {
                   )}
                 </div>
 
-                {/* قائمة */}
+                {/* قائمة الإشعارات */}
                 <div style={{ maxHeight: "400px", overflowY: "auto" }}>
                   {notifications.length === 0 ? (
                     <div style={{ color: "#635E80", textAlign: "center", padding: "40px 20px", fontSize: "13px" }}>{t("no_notifications")}</div>
@@ -1036,7 +1048,6 @@ export default function Home() {
                         onMouseEnter={(e) => (e.currentTarget.style.background = "#1A1726")}
                         onMouseLeave={(e) => (e.currentTarget.style.background = notif.is_read ? "transparent" : "rgba(155,107,255,0.06)")}
                       >
-                        {/* أيقونة + أفاتار */}
                         <div style={{ position: "relative", flexShrink: 0 }}>
                           <Avatar name={usernameFor(notif.from_user_id)} avatarUrl={avatarUrlFor(notif.from_user_id)} size={38} onClick={() => viewProfile(notif.from_user_id || undefined)} />
                           <div style={{ position: "absolute", bottom: "-2px", right: "-2px", fontSize: "14px", background: "#13111E", borderRadius: "50%", width: "20px", height: "20px", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -1085,7 +1096,7 @@ export default function Home() {
       {/* ===== شات ===== */}
       {tab === "chat" && (
         <div>
-          <div style={{ background: "#1A1826", borderRadius: "12px", padding: "16px", maxWidth: "460px", marginBottom: "12px", display: "flex", flexDirection: "column", gap: "10px" }}>
+          <div style={{ background: "#1A1826", borderRadius: "12px", padding: "16px", maxWidth: "460px", marginBottom: "12px", display: "flex", flexDirection: "column", gap: "10px", direction: "ltr" }}>
             {messagesForSection.length === 0 && <div style={{ color: "#635E80" }}>{t("no_messages")}</div>}
             {messagesForSection.map((msg) => (
               <div key={msg.id} style={{ color: "#EDEAF6" }}>
@@ -1311,18 +1322,19 @@ export default function Home() {
                   <input type="checkbox" checked={newCommunityPrivate} onChange={(e) => setNewCommunityPrivate(e.target.checked)} />
                   {t("community_private")}
                 </label>
+
                 {selectedId === "gaming" && (
                   <div style={{ borderTop: "1px solid #2E2A42", paddingTop: "16px", marginBottom: "16px" }}>
                     <div style={{ color: "#9B6BFF", fontSize: "13px", fontWeight: "bold", marginBottom: "12px" }}>🎮 {t("section_gaming")}</div>
                     <div style={{ marginBottom: "10px" }}><div style={{ color: "#9C97B8", fontSize: "12px", marginBottom: "5px" }}>{t("game_name_label")}</div><input value={newGameName} onChange={(e) => setNewGameName(e.target.value)} placeholder="Fortnite, FIFA..." style={inputStyle} /></div>
                     <div style={{ marginBottom: "10px" }}><div style={{ color: "#9C97B8", fontSize: "12px", marginBottom: "5px" }}>{t("game_platform_label")}</div><select value={newGamePlatform} onChange={(e) => setNewGamePlatform(e.target.value)} style={selectStyle}><option value="">-- اختر --</option><option>PC</option><option>PlayStation</option><option>Xbox</option><option>Mobile</option><option>Nintendo Switch</option></select></div>
-                    <div style={{ marginBottom: "10px" }}><div style={{ color: "#9C97B8", fontSize: "12px", marginBottom: "5px" }}>{t("game_type_label")}</div><select value={newGameType} onChange={(e) => setNewGameType(e.target.value)} style={selectStyle}><option value="">-- اختر --</option><option>تنافسي</option><option>كاجوال</option><option>تطوير ألعاب</option><option>استراتيجية</option><option>RPG</option></select></div>
+                    <div style={{ marginBottom: "10px" }}><div style={{ color: "#9C97B8", fontSize: "12px", marginBottom: "5px" }}>{t("game_type_label")}</div><select value={newGameType} onChange={(e) => setNewGameType(e.target.value)} style={selectStyle}><option value="">-- اختر --</option><option>تنافسي</option><option>كاجوال</option><option>ألعاب تطوير</option><option>استراتيجية</option><option>RPG</option></select></div>
                   </div>
                 )}
                 {selectedId === "editing" && (
                   <div style={{ borderTop: "1px solid #2E2A42", paddingTop: "16px", marginBottom: "16px" }}>
                     <div style={{ color: "#FF3D8A", fontSize: "13px", fontWeight: "bold", marginBottom: "12px" }}>🎬 {t("section_editing")}</div>
-                    <div style={{ marginBottom: "10px" }}><div style={{ color: "#9C97B8", fontSize: "12px", marginBottom: "5px" }}>{t("edit_type_label")}</div><select value={newEditType} onChange={(e) => setNewEditType(e.target.value)} style={selectStyle}><option value="">-- اختر --</option><option>فيديو كليب</option><option>شورتس/ريلز</option><option>سينمائي</option><option>موشن جرافيك</option><option>VFX</option></select></div>
+                    <div style={{ marginBottom: "10px" }}><div style={{ color: "#9C97B8", fontSize: "12px", marginBottom: "5px" }}>{t("edit_type_label")}</div><select value={newEditType} onChange={(e) => setNewEditType(e.target.value)} style={selectStyle}><option value="">-- اختر --</option><option>كليب فيديو</option><option>ريلز/شورتس</option><option>سينمائي</option><option>جرافيك موشن</option><option>VFX</option></select></div>
                     <div style={{ marginBottom: "10px" }}><div style={{ color: "#9C97B8", fontSize: "12px", marginBottom: "5px" }}>{t("edit_software_label")}</div><select value={newEditSoftware} onChange={(e) => setNewEditSoftware(e.target.value)} style={selectStyle}><option value="">-- اختر --</option><option>Adobe Premiere</option><option>After Effects</option><option>CapCut</option><option>DaVinci Resolve</option><option>Final Cut Pro</option></select></div>
                     <div style={{ marginBottom: "10px" }}><div style={{ color: "#9C97B8", fontSize: "12px", marginBottom: "5px" }}>{t("edit_level_label")}</div><select value={newEditLevel} onChange={(e) => setNewEditLevel(e.target.value)} style={selectStyle}><option value="">-- اختر --</option><option>مبتدئ</option><option>متوسط</option><option>محترف</option></select></div>
                   </div>
@@ -1343,6 +1355,7 @@ export default function Home() {
                     <div style={{ marginBottom: "10px" }}><div style={{ color: "#9C97B8", fontSize: "12px", marginBottom: "5px" }}>{t("sport_content_label")}</div><select value={newSportContent} onChange={(e) => setNewSportContent(e.target.value)} style={selectStyle}><option value="">-- اختر --</option><option>أخبار</option><option>تحليل مباريات</option><option>مباريات مباشرة</option><option>إحصائيات</option></select></div>
                   </div>
                 )}
+
                 <button onClick={createCommunity} disabled={creatingCommunity || !newCommunityName.trim()} style={{ width: "100%", padding: "12px", borderRadius: "10px", border: "none", background: "linear-gradient(135deg, #9B6BFF, #FF3D8A)", color: "white", cursor: "pointer", fontSize: "15px", fontWeight: "bold", opacity: creatingCommunity || !newCommunityName.trim() ? 0.6 : 1 }}>
                   {creatingCommunity ? t("creating") : t("create_community")}
                 </button>
@@ -1370,7 +1383,7 @@ export default function Home() {
                     const status = myMembershipStatus(community.id);
                     const isOwner = user.id === community.owner_id;
                     return (
-                      <div key={community.id} style={{ background: "#1A1826", borderRadius: "14px", overflow: "hidden", border: "1px solid #2E2A42" }}
+                      <div key={community.id} style={{ background: "#1A1826", borderRadius: "14px", overflow: "hidden", border: "1px solid #2E2A42", transition: "transform 0.2s" }}
                         onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
                         onMouseLeave={(e) => (e.currentTarget.style.transform = "translateY(0)")}>
                         <div style={{ height: "6px", background: community.color }} />
@@ -1417,6 +1430,7 @@ export default function Home() {
         const postCount = posts.filter((p) => p.user_id === displayedId).length;
         const videoCount = videos.filter((v) => v.user_id === displayedId).length;
         const messageCount = messages.filter((m) => m.user_id === displayedId).length;
+
         return (
           <div style={{ maxWidth: "500px" }}>
             {viewingProfileId !== null && <button onClick={() => setViewingProfileId(null)} style={{ background: "transparent", border: "none", color: "#9B6BFF", cursor: "pointer", fontSize: "13px", marginBottom: "16px", padding: 0 }}>{t("back_to_my_profile")}</button>}
@@ -1451,6 +1465,7 @@ export default function Home() {
                 </div>
               </>
             )}
+
             {viewingProfileId === null && editingProfile && (
               <div style={{ background: "#1A1826", border: "1px solid #2E2A42", borderRadius: "12px", padding: "16px", marginTop: "10px" }}>
                 <div style={{ color: "#9C97B8", fontSize: "13px", marginBottom: "6px" }}>{t("username_label")}</div>
@@ -1464,6 +1479,7 @@ export default function Home() {
                 </div>
               </div>
             )}
+
             {viewingProfileId === null && showSettings && (
               <div style={{ background: "#1A1826", border: "1px solid #2E2A42", borderRadius: "12px", padding: "16px", marginTop: "10px" }}>
                 <button onClick={() => { setShowSettings(false); setConfirmingDelete(false); }} style={{ background: "transparent", border: "none", color: "#9B6BFF", cursor: "pointer", fontSize: "13px", marginBottom: "16px", padding: 0 }}>{t("back")}</button>
@@ -1500,6 +1516,7 @@ export default function Home() {
                 </div>
               </div>
             )}
+
             {viewingProfileId !== null && (
               <>
                 <div style={{ color: "#9C97B8", fontSize: "14px", marginBottom: "12px" }}>{displayedBio || t("no_bio")}</div>
@@ -1511,16 +1528,62 @@ export default function Home() {
       })()}
 
       {/* ===== زر الرسائل العائم ===== */}
-      <div onClick={() => { setDmPanelOpen(!dmPanelOpen); if (!dmPanelOpen) setActiveDmUserId(null); }}
-        style={{ position: "fixed", bottom: "28px", left: "28px", width: "58px", height: "58px", borderRadius: "50%", background: "linear-gradient(135deg, #9B6BFF 0%, #FF3D8A 100%)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", boxShadow: "0 4px 24px rgba(155,107,255,0.45)", zIndex: 1000, transition: "transform 0.2s ease" }}
-        onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.transform = "scale(1.1)"; }}
-        onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.transform = "scale(1)"; }}>
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
-        {unreadDmCount > 0 && <div style={{ position: "absolute", top: "2px", right: "2px", width: "18px", height: "18px", borderRadius: "50%", background: "#FF3D8A", color: "white", fontSize: "10px", fontWeight: "bold", display: "flex", alignItems: "center", justifyContent: "center", border: "2px solid #100F17" }}>{unreadDmCount > 9 ? "9+" : unreadDmCount}</div>}
-      </div>
+<div
+  onClick={() => { setDmPanelOpen(!dmPanelOpen); if (!dmPanelOpen) setActiveDmUserId(null); }}
+  style={{
+    position: "fixed",
+    bottom: "28px",
+    // ← يتغير حسب اللغة
+    ...(dir === "rtl" ? { left: "28px" } : { right: "28px" }),
+    width: "58px", height: "58px",
+    borderRadius: "50%",
+    background: "linear-gradient(135deg, #9B6BFF 0%, #FF3D8A 100%)",
+    display: "flex", alignItems: "center", justifyContent: "center",
+    cursor: "pointer",
+    boxShadow: "0 4px 24px rgba(155,107,255,0.45)",
+    zIndex: 1000,
+    transition: "transform 0.2s ease",
+  }}
+  onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.transform = "scale(1.1)"; }}
+  onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.transform = "scale(1)"; }}
+>
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+  </svg>
+  {unreadDmCount > 0 && (
+    <div style={{
+      position: "absolute", top: "2px", right: "2px",
+      width: "18px", height: "18px", borderRadius: "50%",
+      background: "#FF3D8A", color: "white", fontSize: "10px",
+      fontWeight: "bold", display: "flex", alignItems: "center",
+      justifyContent: "center", border: "2px solid #100F17"
+    }}>
+      {unreadDmCount > 9 ? "9+" : unreadDmCount}
+    </div>
+  )}
+</div>
 
-      {/* ===== لوحة الرسائل ===== */}
-      <div style={{ position: "fixed", bottom: "0", left: "0", width: "360px", height: dmPanelOpen ? "100vh" : "0", background: "#13111E", borderRight: "1px solid #1E1B2E", zIndex: 999, overflow: "hidden", transition: "height 0.35s cubic-bezier(0.4,0,0.2,1)", display: "flex", flexDirection: "column", boxShadow: dmPanelOpen ? "4px 0 40px rgba(0,0,0,0.6)" : "none" }}>
+{/* ===== لوحة الرسائل ===== */}
+<div style={{
+  position: "fixed",
+  bottom: "0",
+  // ← يتغير حسب اللغة
+  ...(dir === "rtl"
+    ? { left: "0", borderRight: "1px solid #1E1B2E", borderLeft: "none" }
+    : { right: "0", borderLeft: "1px solid #1E1B2E", borderRight: "none" }
+  ),
+  width: "360px",
+  height: dmPanelOpen ? "100vh" : "0",
+  background: "#13111E",
+  zIndex: 999,
+  overflow: "hidden",
+  transition: "height 0.35s cubic-bezier(0.4,0,0.2,1)",
+  display: "flex", flexDirection: "column",
+  boxShadow: dmPanelOpen
+    ? (dir === "rtl" ? "4px 0 40px rgba(0,0,0,0.6)" : "-4px 0 40px rgba(0,0,0,0.6)")
+    : "none",
+  direction: "ltr",
+}}>
         {dmPanelOpen && (
           <>
             {activeDmUserId === null && (
@@ -1568,6 +1631,7 @@ export default function Home() {
                 </div>
               </div>
             )}
+
             {activeDmUserId !== null && (
               <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
                 <div style={{ padding: "14px 16px", borderBottom: "1px solid #1E1B2E", background: "#0F0D1A", display: "flex", alignItems: "center", gap: "12px" }}>
