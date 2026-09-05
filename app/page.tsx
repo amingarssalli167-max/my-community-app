@@ -12,7 +12,15 @@ type VideoLike = { id: number; video_id: number; user_id: string };
 type PostComment = { id: number; post_id: number; user_id: string; text: string };
 type VideoComment = { id: number; video_id: number; user_id: string; text: string };
 type MessageReaction = { id: number; message_id: number; user_id: string; emoji: string };
-type DirectMessage = { id: number; sender_id: string; recipient_id: string; text: string; created_at: string };
+type DirectMessage = { 
+  id: number; 
+  sender_id: string; 
+  recipient_id: string; 
+  text: string;
+  image_url: string | null;
+  video_url: string | null;
+  created_at: string 
+};
 type Community = {
   id: number; name: string; description: string | null; section_id: string;
   owner_id: string; color: string; is_private: boolean; created_at: string;
@@ -20,6 +28,8 @@ type Community = {
   edit_type?: string; edit_software?: string; edit_level?: string;
   movies_genre?: string; movies_source?: string; movies_language?: string;
   sport_type?: string; sport_team?: string; sport_content?: string;
+   car_type?: string; car_brand?: string; car_content?: string;
+  anime_genre?: string; anime_source?: string; anime_status?: string;
 };
 type CommunityMember = { id: number; community_id: number; user_id: string; status: string; created_at: string };
 type Notification = {
@@ -27,6 +37,61 @@ type Notification = {
   type: string; message: string; is_read: boolean;
   related_id: number | null; created_at: string;
 };
+type CommunityMessage = { 
+  id: number; 
+  community_id: number; 
+  user_id: string; 
+  text: string; 
+  created_at: string; 
+};
+
+type CommunityPost = { 
+  id: number; 
+  community_id: number; 
+  user_id: string; 
+  title: string; 
+  body: string | null; 
+  is_announcement: boolean; 
+  created_at: string; 
+};
+
+type CommunityVideo = { 
+  id: number; 
+  community_id: number; 
+  user_id: string; 
+  title: string; 
+  url: string; 
+  created_at: string; 
+};
+
+type CommunityPostLike = { 
+  id: number; 
+  post_id: number; 
+  user_id: string; 
+};
+
+type CommunityPostComment = { 
+  id: number; 
+  post_id: number; 
+  user_id: string; 
+  text: string; 
+  created_at: string;
+};
+
+type CommunityVideoLike = { 
+  id: number; 
+  video_id: number; 
+  user_id: string; 
+};
+
+type CommunityVideoComment = { 
+  id: number; 
+  video_id: number; 
+  user_id: string; 
+  text: string; 
+  created_at: string;
+};
+
 type Lang = "ar" | "en" | "fr";
 
 const REACTION_EMOJIS = ["👍", "❤️", "😂", "😮", "😢", "🔥"];
@@ -148,6 +213,44 @@ const translations = {
     sport_type_label: "الرياضة",
     sport_team_label: "الفريق",
     sport_content_label: "نوع المحتوى",
+    car_type_label: "نوع السيارة",
+car_brand_label: "الماركة",
+car_content_label: "نوع المحتوى",
+car_type_sedan: "سيدان",
+car_type_suv: "SUV",
+car_type_sport: "رياضية",
+car_type_classic: "كلاسيكية",
+car_type_electric: "كهربائية",
+car_type_pickup: "بيك أب",
+car_content_tuning: "تيونينق وتعديلات",
+car_content_reviews: "مراجعات",
+car_content_racing: "سباقات",
+car_content_maintenance: "صيانة",
+car_content_prices: "عروض وأسعار",
+anime_genre_label: "النوع",
+anime_source_label: "المصدر",
+anime_status_label: "الحالة",
+anime_genre_action: "أكشن",
+anime_genre_romance: "رومانسي",
+anime_genre_isekai: "إيسيكاي",
+anime_genre_horror: "رعب",
+anime_genre_comedy: "كوميدي",
+anime_genre_adventure: "مغامرات",
+anime_genre_sports: "رياضي",
+anime_genre_drama: "دراما",
+anime_source_manga: "مانجا",
+anime_source_ln: "لايت نوفل",
+anime_source_original: "أصلي",
+anime_source_game: "لعبة",
+anime_status_airing: "يُبث حالياً",
+anime_status_finished: "مكتمل",
+anime_status_upcoming: "قادم",
+edit_type_clip: "فيديو كليب",
+edit_type_shorts: "شورتس/ريلز",
+edit_type_cinema: "سينمائي",
+edit_type_motion: "موشن جرافيك",
+select_placeholder: "-- اختر --",
+  
     notifications_title: "الإشعارات",
     no_notifications: "ما فيه إشعارات بعد",
     mark_all_read: "تعيين الكل كمقروء",
@@ -162,7 +265,31 @@ const translations = {
     just_now: "الآن",
     minutes_ago: "د",
     hours_ago: "س",
-    days_ago: "ي",
+    section_cars: "السيارات",
+    section_anime: "الأنمي",
+    
+    announcements_tab: "الإعلانات",
+chat_tab: "الشات",
+no_messages_community: "ما فيه رسائل بعد",
+no_posts_community: "ما فيه منشورات بعد",
+no_videos_community: "ما فيه فيديوهات بعد",
+no_announcements: "ما فيه إعلانات بعد",
+new_post: "منشور جديد",
+new_video: "رفع فيديو جديد",
+new_announcement: "إعلان جديد",
+announcement_label: "إعلان",
+founder_label: "مؤسس",
+kick_member: "طرد",
+publish_post: "نشر",
+publishing_post: "جاري النشر...",
+upload_video_btn: "رفع الفيديو",
+uploading_video_btn: "جاري الرفع...",
+publish_announcement: "📌 نشر الإعلان",
+publishing_announcement: "جاري النشر...",
+founder_only_note: "أنت المؤسس فقط تقدر تنشر",
+delete_btn: "حذف",
+post_video_url: "رابط الفيديو",
+days_ago: "ي",
   },
   en: {
     loading: "Loading...",
@@ -280,6 +407,44 @@ const translations = {
     sport_type_label: "Sport",
     sport_team_label: "Team",
     sport_content_label: "Content Type",
+    car_type_label: "Car Type",
+car_brand_label: "Brand",
+car_content_label: "Content Type",
+car_type_sedan: "Sedan",
+car_type_suv: "SUV",
+car_type_sport: "Sports Car",
+car_type_classic: "Classic",
+car_type_electric: "Electric",
+car_type_pickup: "Pickup",
+car_content_tuning: "Tuning & Mods",
+car_content_reviews: "Reviews",
+car_content_racing: "Racing",
+car_content_maintenance: "Maintenance",
+car_content_prices: "Deals & Prices",
+anime_genre_label: "Genre",
+anime_source_label: "Source",
+anime_status_label: "Status",
+anime_genre_action: "Action",
+anime_genre_romance: "Romance",
+anime_genre_isekai: "Isekai",
+anime_genre_horror: "Horror",
+anime_genre_comedy: "Comedy",
+anime_genre_adventure: "Adventure",
+anime_genre_sports: "Sports",
+anime_genre_drama: "Drama",
+anime_source_manga: "Manga",
+anime_source_ln: "Light Novel",
+anime_source_original: "Original",
+anime_source_game: "Game",
+anime_status_airing: "Airing",
+anime_status_finished: "Finished",
+anime_status_upcoming: "Upcoming",
+edit_type_clip: "Video Clip",
+edit_type_shorts: "Shorts/Reels",
+edit_type_cinema: "Cinematic",
+edit_type_motion: "Motion Graphic",
+select_placeholder: "-- Select --",
+
     notifications_title: "Notifications",
     no_notifications: "No notifications yet",
     mark_all_read: "Mark all as read",
@@ -294,7 +459,31 @@ const translations = {
     just_now: "now",
     minutes_ago: "m",
     hours_ago: "h",
+    section_cars: "Cars",
+    section_anime: "Anime",
+    announcements_tab: "Announcements",
+chat_tab: "Chat",
+no_messages_community: "No messages yet",
+no_posts_community: "No posts yet",
+no_videos_community: "No videos yet",
+no_announcements: "No announcements yet",
+new_post: "New Post",
+new_video: "Upload New Video",
+new_announcement: "New Announcement",
+announcement_label: "Announcement",
+founder_label: "Founder",
+kick_member: "Kick",
+publish_post: "Post",
+publishing_post: "Posting...",
+upload_video_btn: "Upload Video",
+uploading_video_btn: "Uploading...",
+publish_announcement: "📌 Publish Announcement",
+publishing_announcement: "Publishing...",
+founder_only_note: "Only the founder can post announcements",
+delete_btn: "Delete",
+post_video_url: "Video URL",
     days_ago: "d",
+
   },
   fr: {
     loading: "Chargement...",
@@ -412,6 +601,43 @@ const translations = {
     sport_type_label: "Sport",
     sport_team_label: "Équipe",
     sport_content_label: "Contenu",
+    car_type_label: "Type de voiture",
+car_brand_label: "Marque",
+car_content_label: "Type de contenu",
+car_type_sedan: "Berline",
+car_type_suv: "SUV",
+car_type_sport: "Sportive",
+car_type_classic: "Classique",
+car_type_electric: "Électrique",
+car_type_pickup: "Pick-up",
+car_content_tuning: "Tuning & Modifs",
+car_content_reviews: "Critiques",
+car_content_racing: "Courses",
+car_content_maintenance: "Entretien",
+car_content_prices: "Offres & Prix",
+anime_genre_label: "Genre",
+anime_source_label: "Source",
+anime_status_label: "Statut",
+anime_genre_action: "Action",
+anime_genre_romance: "Romance",
+anime_genre_isekai: "Isekai",
+anime_genre_horror: "Horreur",
+anime_genre_comedy: "Comédie",
+anime_genre_adventure: "Aventure",
+anime_genre_sports: "Sport",
+anime_genre_drama: "Drame",
+anime_source_manga: "Manga",
+anime_source_ln: "Light Novel",
+anime_source_original: "Original",
+anime_source_game: "Jeu",
+anime_status_airing: "En cours",
+anime_status_finished: "Terminé",
+anime_status_upcoming: "À venir",
+edit_type_clip: "Clip vidéo",
+edit_type_shorts: "Shorts/Reels",
+edit_type_cinema: "Cinématique",
+edit_type_motion: "Motion Graphic",
+select_placeholder: "-- Sélectionner --",
     notifications_title: "Notifications",
     no_notifications: "Aucune notification",
     mark_all_read: "Tout marquer comme lu",
@@ -426,6 +652,29 @@ const translations = {
     just_now: "maintenant",
     minutes_ago: "min",
     hours_ago: "h",
+    section_cars: "Voitures",
+    section_anime: "Anime",
+    announcements_tab: "Annonces",
+chat_tab: "Chat",
+no_messages_community: "Aucun message",
+no_posts_community: "Aucune publication",
+no_videos_community: "Aucune vidéo",
+no_announcements: "Aucune annonce",
+new_post: "Nouvelle publication",
+new_video: "Téléverser une vidéo",
+new_announcement: "Nouvelle annonce",
+announcement_label: "Annonce",
+founder_label: "Fondateur",
+kick_member: "Expulser",
+publish_post: "Publier",
+publishing_post: "Publication...",
+upload_video_btn: "Téléverser",
+uploading_video_btn: "Téléversement...",
+publish_announcement: "📌 Publier l'annonce",
+publishing_announcement: "Publication...",
+founder_only_note: "Seul le fondateur peut publier",
+delete_btn: "Supprimer",
+post_video_url: "URL de la vidéo",
     days_ago: "j",
   },
 } as const;
@@ -494,13 +743,14 @@ export default function Home() {
   function t(key: keyof typeof translations["ar"]): string {
     return translations[language][key] || translations.ar[key] || key;
   }
-
-  const sections = [
-    { id: "gaming", name: t("section_gaming"), color: "#9B6BFF", subsections: [{ id: "gaming-general", name: t("subsection_general") }] },
-    { id: "editing", name: t("section_editing"), color: "#FF3D8A", subsections: [{ id: "editing-general", name: t("subsection_general") }] },
-    { id: "movies", name: t("section_movies"), color: "#FFC24B", subsections: [{ id: "movies-general", name: t("subsection_general") }] },
-    { id: "sports", name: t("section_sports"), color: "#22D3EE", subsections: [{ id: "sports-general", name: t("subsection_general") }] },
-  ];
+const sections = [
+  { id: "gaming", name: t("section_gaming"), color: "#9B6BFF", subsections: [{ id: "gaming-general", name: t("subsection_general") }] },
+  { id: "editing", name: t("section_editing"), color: "#FF3D8A", subsections: [{ id: "editing-general", name: t("subsection_general") }] },
+  { id: "movies", name: t("section_movies"), color: "#FFC24B", subsections: [{ id: "movies-general", name: t("subsection_general") }] },
+  { id: "sports", name: t("section_sports"), color: "#22D3EE", subsections: [{ id: "sports-general", name: t("subsection_general") }] },
+  { id: "cars", name: t("section_cars"), color: "#F97316", subsections: [{ id: "cars-general", name: t("subsection_general") }] },
+  { id: "anime", name: t("section_anime"), color: "#EC4899", subsections: [{ id: "anime-general", name: t("subsection_general") }] },
+];
 
   const [user, setUser] = useState<User | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
@@ -531,11 +781,44 @@ export default function Home() {
   const [showNotifications, setShowNotifications] = useState(false);
   const [toastNotif, setToastNotif] = useState<(Notification & { fromUsername: string; fromAvatar: string | null }) | null>(null);
   const notifPanelRef = useRef<HTMLDivElement>(null);
-
+  const [dmImage, setDmImage] = useState<File | null>(null);
+const [dmVideo, setDmVideo] = useState<File | null>(null);
+const [dmLink, setDmLink] = useState("");
+const [showDmAttach, setShowDmAttach] = useState(false);
+const [uploadingDmFile, setUploadingDmFile] = useState(false);
+// ===== states المجتمع الداخلي =====
+const [communityTab, setCommunityTab] = useState<"chat" | "posts" | "videos" | "members" | "announcements">("chat");
+const [communityMessages, setCommunityMessages] = useState<CommunityMessage[]>([]);
+const [newCommunityMessage, setNewCommunityMessage] = useState("");
+const [sendingCommunityMessage, setSendingCommunityMessage] = useState(false);
+const [communityPosts, setCommunityPosts] = useState<CommunityPost[]>([]);
+const [newCommunityPostTitle, setNewCommunityPostTitle] = useState("");
+const [newCommunityPostBody, setNewCommunityPostBody] = useState("");
+const [newCommunityPostVideo, setNewCommunityPostVideo] = useState<File | null>(null);
+const [publishingCommunityPost, setPublishingCommunityPost] = useState(false);
+const [communityVideos, setCommunityVideos] = useState<CommunityVideo[]>([]);
+const [newCommunityVideoTitle, setNewCommunityVideoTitle] = useState("");
+const [newCommunityVideoFile, setNewCommunityVideoFile] = useState<File | null>(null);
+const [uploadingCommunityVideo, setUploadingCommunityVideo] = useState(false);
+const [communityPostLikes, setCommunityPostLikes] = useState<CommunityPostLike[]>([]);
+const [communityPostComments, setCommunityPostComments] = useState<CommunityPostComment[]>([]);
+const [communityVideoLikes, setCommunityVideoLikes] = useState<CommunityVideoLike[]>([]);
+const [communityVideoComments, setCommunityVideoComments] = useState<CommunityVideoComment[]>([]);
+const [newCommunityPostCommentText, setNewCommunityPostCommentText] = useState<Record<number, string>>({});
+const [newCommunityVideoCommentText, setNewCommunityVideoCommentText] = useState<Record<number, string>>({});
+const [newAnnouncementTitle, setNewAnnouncementTitle] = useState("");
+const [newAnnouncementBody, setNewAnnouncementBody] = useState("");
+const [publishingAnnouncement, setPublishingAnnouncement] = useState(false);
+const communityMessagesEndRef = useRef<HTMLDivElement>(null);
   const selectedSection = sections.find((s) => s.id === selectedId);
   const unreadDmCount = user ? directMessages.filter((m) => m.recipient_id === user.id).length : 0;
   const unreadNotifCount = notifications.filter((n) => !n.is_read).length;
-
+const [newCarType, setNewCarType] = useState("");
+const [newCarBrand, setNewCarBrand] = useState("");
+const [newCarContent, setNewCarContent] = useState("");
+const [newAnimeGenre, setNewAnimeGenre] = useState("");
+const [newAnimeSource, setNewAnimeSource] = useState("");
+const [newAnimeStatus, setNewAnimeStatus] = useState("");
   function timeAgo(dateStr: string): string {
     const diff = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000);
     if (diff < 60) return t("just_now");
@@ -543,12 +826,194 @@ export default function Home() {
     if (diff < 86400) return `${Math.floor(diff / 3600)}${t("hours_ago")}`;
     return `${Math.floor(diff / 86400)}${t("days_ago")}`;
   }
+// ===== fetch المجتمع =====
+async function fetchCommunityData(communityId: number) {
+  const [msgs, posts, videos, postLikes, postComments, videoLikes, videoComments] = await Promise.all([
+    supabase.from("community_messages").select("*").eq("community_id", communityId).order("created_at", { ascending: true }),
+    supabase.from("community_posts").select("*").eq("community_id", communityId).order("created_at", { ascending: false }),
+    supabase.from("community_videos").select("*").eq("community_id", communityId).order("created_at", { ascending: false }),
+    supabase.from("community_post_likes").select("*"),
+    supabase.from("community_post_comments").select("*").order("created_at", { ascending: true }),
+    supabase.from("community_video_likes").select("*"),
+    supabase.from("community_video_comments").select("*").order("created_at", { ascending: true }),
+  ]);
+  setCommunityMessages(msgs.data || []);
+  setCommunityPosts(posts.data || []);
+  setCommunityVideos(videos.data || []);
+  setCommunityPostLikes(postLikes.data || []);
+  setCommunityPostComments(postComments.data || []);
+  setCommunityVideoLikes(videoLikes.data || []);
+  setCommunityVideoComments(videoComments.data || []);
+}
 
+// ===== إرسال رسالة المجتمع =====
+async function sendCommunityMessage() {
+  if (!user || !selectedCommunity || !newCommunityMessage.trim()) return;
+  setSendingCommunityMessage(true);
+  await supabase.from("community_messages").insert({
+    community_id: selectedCommunity.id,
+    user_id: user.id,
+    text: newCommunityMessage.trim(),
+  });
+  setNewCommunityMessage("");
+  setSendingCommunityMessage(false);
+  fetchCommunityData(selectedCommunity.id);
+}
+
+// ===== نشر منشور المجتمع =====
+async function addCommunityPost() {
+  if (!user || !selectedCommunity || !newCommunityPostTitle.trim()) return;
+  setPublishingCommunityPost(true);
+  let video_url: string | null = null;
+  if (newCommunityPostVideo) video_url = await uploadVideoFile(newCommunityPostVideo);
+  await supabase.from("community_posts").insert({
+    community_id: selectedCommunity.id,
+    user_id: user.id,
+    title: newCommunityPostTitle.trim(),
+    body: newCommunityPostBody.trim() || null,
+    is_announcement: false,
+  });
+  setNewCommunityPostTitle("");
+  setNewCommunityPostBody("");
+  setNewCommunityPostVideo(null);
+  setPublishingCommunityPost(false);
+  fetchCommunityData(selectedCommunity.id);
+}
+
+// ===== نشر إعلان (المؤسس فقط) =====
+async function addAnnouncement() {
+  if (!user || !selectedCommunity || !newAnnouncementTitle.trim()) return;
+  if (user.id !== selectedCommunity.owner_id) return;
+  setPublishingAnnouncement(true);
+  await supabase.from("community_posts").insert({
+    community_id: selectedCommunity.id,
+    user_id: user.id,
+    title: newAnnouncementTitle.trim(),
+    body: newAnnouncementBody.trim() || null,
+    is_announcement: true,
+  });
+  setNewAnnouncementTitle("");
+  setNewAnnouncementBody("");
+  setPublishingAnnouncement(false);
+  fetchCommunityData(selectedCommunity.id);
+}
+
+// ===== رفع فيديو المجتمع =====
+async function uploadCommunityVideo() {
+  if (!user || !selectedCommunity || !newCommunityVideoFile || !newCommunityVideoTitle.trim()) return;
+  setUploadingCommunityVideo(true);
+  const url = await uploadVideoFile(newCommunityVideoFile);
+  if (url) {
+    await supabase.from("community_videos").insert({
+      community_id: selectedCommunity.id,
+      user_id: user.id,
+      title: newCommunityVideoTitle.trim(),
+      url,
+    });
+  }
+  setNewCommunityVideoTitle("");
+  setNewCommunityVideoFile(null);
+  setUploadingCommunityVideo(false);
+  fetchCommunityData(selectedCommunity.id);
+}
+
+// ===== لايك منشور المجتمع =====
+async function toggleCommunityPostLike(postId: number) {
+  if (!user) return;
+  const ex = communityPostLikes.find((l) => l.post_id === postId && l.user_id === user.id);
+  if (ex) await supabase.from("community_post_likes").delete().eq("id", ex.id);
+  else await supabase.from("community_post_likes").insert({ post_id: postId, user_id: user.id });
+  if (selectedCommunity) fetchCommunityData(selectedCommunity.id);
+}
+
+// ===== لايك فيديو المجتمع =====
+async function toggleCommunityVideoLike(videoId: number) {
+  if (!user) return;
+  const ex = communityVideoLikes.find((l) => l.video_id === videoId && l.user_id === user.id);
+  if (ex) await supabase.from("community_video_likes").delete().eq("id", ex.id);
+  else await supabase.from("community_video_likes").insert({ video_id: videoId, user_id: user.id });
+  if (selectedCommunity) fetchCommunityData(selectedCommunity.id);
+}
+
+// ===== تعليق منشور المجتمع =====
+async function addCommunityPostComment(postId: number) {
+  if (!user) return;
+  const text = (newCommunityPostCommentText[postId] || "").trim();
+  if (!text) return;
+  await supabase.from("community_post_comments").insert({ post_id: postId, user_id: user.id, text });
+  setNewCommunityPostCommentText((prev) => ({ ...prev, [postId]: "" }));
+  if (selectedCommunity) fetchCommunityData(selectedCommunity.id);
+}
+
+// ===== تعليق فيديو المجتمع =====
+async function addCommunityVideoComment(videoId: number) {
+  if (!user) return;
+  const text = (newCommunityVideoCommentText[videoId] || "").trim();
+  if (!text) return;
+  await supabase.from("community_video_comments").insert({ video_id: videoId, user_id: user.id, text });
+  setNewCommunityVideoCommentText((prev) => ({ ...prev, [videoId]: "" }));
+  if (selectedCommunity) fetchCommunityData(selectedCommunity.id);
+}
+
+// ===== حذف منشور (المؤسس أو صاحبه) =====
+async function deleteCommunityPost(postId: number) {
+  if (!user || !selectedCommunity) return;
+  const post = communityPosts.find((p) => p.id === postId);
+  if (post?.user_id !== user.id && selectedCommunity.owner_id !== user.id) return;
+  await supabase.from("community_posts").delete().eq("id", postId);
+  fetchCommunityData(selectedCommunity.id);
+}
+
+// ===== طرد عضو (المؤسس فقط) =====
+async function kickMember(memberId: string) {
+  if (!user || !selectedCommunity || user.id !== selectedCommunity.owner_id) return;
+  await supabase.from("community_members").delete()
+    .eq("community_id", selectedCommunity.id)
+    .eq("user_id", memberId);
+  fetchCommunityMembers();
+}
+
+// ===== helper functions =====
+function communityPostLikeCount(postId: number) { return communityPostLikes.filter((l) => l.post_id === postId).length; }
+function isCommunityPostLikedByMe(postId: number) { return !!user && communityPostLikes.some((l) => l.post_id === postId && l.user_id === user.id); }
+function communityPostCommentsFor(postId: number) { return communityPostComments.filter((c) => c.post_id === postId); }
+function communityVideoLikeCount(videoId: number) { return communityVideoLikes.filter((l) => l.video_id === videoId).length; }
+function isCommunityVideoLikedByMe(videoId: number) { return !!user && communityVideoLikes.some((l) => l.video_id === videoId && l.user_id === user.id); }
+function communityVideoCommentsFor(videoId: number) { return communityVideoComments.filter((c) => c.video_id === videoId); }
   async function createNotification(userId: string, fromUserId: string, type: string, message: string, relatedId?: number) {
     if (userId === fromUserId) return;
     await supabase.from("notifications").insert({ user_id: userId, from_user_id: fromUserId, type, message, related_id: relatedId || null });
   }
+// تحميل بيانات المجتمع عند الدخول
+useEffect(() => {
+  if (selectedCommunity) {
+    fetchCommunityData(selectedCommunity.id);
+    setCommunityTab("chat");
+  }
+}, [selectedCommunity]);
 
+// scroll للأسفل في شات المجتمع
+useEffect(() => {
+  if (communityMessagesEndRef.current) {
+    communityMessagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+  }
+}, [communityMessages]);
+
+// Realtime شات المجتمع
+useEffect(() => {
+  if (!user || !selectedCommunity) return;
+  const ch = supabase.channel(`community-chat-${selectedCommunity.id}`)
+    .on("postgres_changes", { 
+      event: "INSERT", 
+      schema: "public", 
+      table: "community_messages",
+      filter: `community_id=eq.${selectedCommunity.id}`
+    }, (payload) => {
+      const m = payload.new as CommunityMessage;
+      setCommunityMessages((prev) => prev.some((x) => x.id === m.id) ? prev : [...prev, m]);
+    }).subscribe();
+  return () => { supabase.removeChannel(ch); };
+}, [user, selectedCommunity]);
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => { setUser(data.user); setAuthLoading(false); });
     const { data: listener } = supabase.auth.onAuthStateChange((_e, session) => { setUser(session?.user ?? null); });
@@ -874,12 +1339,56 @@ export default function Home() {
   function lastDmWith(otherId: string) { const thread = dmThreadWith(otherId); return thread[thread.length - 1]; }
 
   async function sendDirectMessage() {
-    if (!user || !activeDmUserId || !newDmText.trim()) return;
-    setSendingDm(true);
-    await supabase.from("direct_messages").insert({ sender_id: user.id, recipient_id: activeDmUserId, text: newDmText.trim() });
-    await createNotification(activeDmUserId, user.id, "dm", `${usernameFor(user.id)} ${t("notif_dm")}`);
-    setNewDmText(""); setSendingDm(false);
+  if (!user || !activeDmUserId || 
+      (!newDmText.trim() && !dmImage && !dmVideo && !dmLink.trim())) return;
+  
+  setSendingDm(true);
+  setUploadingDmFile(true);
+
+  let image_url: string | null = null;
+  let video_url: string | null = null;
+
+  // رفع الصورة
+  if (dmImage) {
+    const fn = `dm-images/${Date.now()}-${dmImage.name}`;
+    const { error } = await supabase.storage.from("avatars").upload(fn, dmImage);
+    if (!error) {
+      image_url = supabase.storage.from("avatars").getPublicUrl(fn).data.publicUrl;
+    }
   }
+
+  // رفع الفيديو
+  if (dmVideo) {
+    video_url = await uploadVideoFile(dmVideo);
+  }
+
+  // النص مع الرابط
+  let finalText = newDmText.trim();
+  if (dmLink.trim()) {
+    finalText = finalText ? `${finalText}\n${dmLink.trim()}` : dmLink.trim();
+  }
+
+  await supabase.from("direct_messages").insert({ 
+    sender_id: user.id, 
+    recipient_id: activeDmUserId,
+    text: finalText,
+    image_url,
+    video_url,
+  });
+
+  await createNotification(
+    activeDmUserId, user.id, "dm", 
+    `${usernameFor(user.id)} ${t("notif_dm")}`
+  );
+
+  setNewDmText(""); 
+  setDmImage(null);
+  setDmVideo(null);
+  setDmLink("");
+  setShowDmAttach(false);
+  setUploadingDmFile(false);
+  setSendingDm(false);
+}
 
   function filteredPartners() {
     const partners = conversationPartners().sort((a, b) => new Date(lastDmWith(b)?.created_at || 0).getTime() - new Date(lastDmWith(a)?.created_at || 0).getTime());
@@ -897,6 +1406,12 @@ export default function Home() {
       edit_type: selectedId === "editing" ? newEditType : null, edit_software: selectedId === "editing" ? newEditSoftware : null, edit_level: selectedId === "editing" ? newEditLevel : null,
       movies_genre: selectedId === "movies" ? newMoviesGenre : null, movies_source: selectedId === "movies" ? newMoviesSource : null, movies_language: selectedId === "movies" ? newMoviesLanguage : null,
       sport_type: selectedId === "sports" ? newSportType : null, sport_team: selectedId === "sports" ? newSportTeam : null, sport_content: selectedId === "sports" ? newSportContent : null,
+      car_type: selectedId === "cars" ? newCarType : null,
+      car_brand: selectedId === "cars" ? newCarBrand : null,
+      car_content: selectedId === "cars" ? newCarContent : null,
+      anime_genre: selectedId === "anime" ? newAnimeGenre : null,
+      anime_source: selectedId === "anime" ? newAnimeSource : null,
+     anime_status: selectedId === "anime" ? newAnimeStatus : null,
     }).select().single();
     if (!error && newComm) {
       await supabase.from("community_members").insert({ community_id: newComm.id, user_id: user.id, status: "approved" });
@@ -906,6 +1421,8 @@ export default function Home() {
       setNewEditType(""); setNewEditSoftware(""); setNewEditLevel("");
       setNewMoviesGenre(""); setNewMoviesSource(""); setNewMoviesLanguage("");
       setNewSportType(""); setNewSportTeam(""); setNewSportContent("");
+      setNewCarType(""); setNewCarBrand(""); setNewCarContent("");
+      setNewAnimeGenre(""); setNewAnimeSource(""); setNewAnimeStatus("");
       fetchCommunities(); fetchCommunityMembers();
     }
     setCreatingCommunity(false);
@@ -1229,52 +1746,293 @@ export default function Home() {
       {tab === "communities" && (
         <div style={{ maxWidth: "700px" }}>
           {selectedCommunity && !showCreateCommunity && !showManageRequests && (
-            <div>
-              <button onClick={() => setSelectedCommunity(null)} style={{ background: "transparent", border: "none", color: "#9B6BFF", cursor: "pointer", fontSize: "13px", marginBottom: "20px", padding: 0 }}>{t("back_to_communities")}</button>
-              <div style={{ background: "#1A1826", borderRadius: "16px", padding: "24px", marginBottom: "20px", borderTop: `4px solid ${selectedCommunity.color}` }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "12px" }}>
-                  <div>
-                    <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
-                      <div style={{ width: "48px", height: "48px", borderRadius: "12px", background: selectedCommunity.color, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "22px", fontWeight: "bold", color: "white" }}>{selectedCommunity.name.charAt(0).toUpperCase()}</div>
-                      <div>
-                        <div style={{ color: "white", fontWeight: "bold", fontSize: "20px" }}>{selectedCommunity.name}</div>
-                        <div style={{ color: "#9C97B8", fontSize: "12px" }}>{communityMembersCount(selectedCommunity.id)} {t("members_count")}</div>
-                      </div>
-                    </div>
-                    {selectedCommunity.description && <div style={{ color: "#9C97B8", fontSize: "14px", marginBottom: "8px" }}>{selectedCommunity.description}</div>}
-                    <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                      <span style={{ color: "#635E80", fontSize: "12px" }}>{t("owner_label")}:</span>
-                      <span onClick={() => viewProfile(selectedCommunity.owner_id)} style={{ color: "#9B6BFF", fontSize: "12px", cursor: "pointer" }}>{usernameFor(selectedCommunity.owner_id)}</span>
-                    </div>
-                  </div>
-                  {user.id === selectedCommunity.owner_id && (
-                    <button onClick={() => setShowManageRequests(true)} style={{ padding: "8px 16px", borderRadius: "8px", border: "1px solid #9B6BFF", background: "transparent", color: "#9B6BFF", cursor: "pointer", fontSize: "13px" }}>
-                      {t("manage_requests")} ({pendingRequests(selectedCommunity.id).length})
-                    </button>
-                  )}
+  <div> 
+    <button onClick={() => setSelectedCommunity(null)} style={{ background: "transparent", border: "none", color: "#9B6BFF", cursor: "pointer", fontSize: "13px", marginBottom: "20px", padding: 0 }}>
+      {t("back_to_communities")}
+    </button>
+
+    {/* هيدر المجتمع */}
+    <div style={{ background: "#1A1826", borderRadius: "16px", padding: "20px", marginBottom: "16px", borderTop: `4px solid ${selectedCommunity.color}` }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+        <div style={{ width: "56px", height: "56px", borderRadius: "14px", background: selectedCommunity.color, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "26px", fontWeight: "bold", color: "white", flexShrink: 0 }}>
+          {selectedCommunity.name.charAt(0).toUpperCase()}
+        </div>
+        <div style={{ flex: 1 }}>
+          <div style={{ color: "white", fontWeight: "bold", fontSize: "20px" }}>{selectedCommunity.name}</div>
+          <div style={{ color: "#9C97B8", fontSize: "12px" }}>{communityMembersCount(selectedCommunity.id)} {t("members_count")} • {t("owner_label")}: {usernameFor(selectedCommunity.owner_id)}</div>
+          {selectedCommunity.description && <div style={{ color: "#9C97B8", fontSize: "13px", marginTop: "4px" }}>{selectedCommunity.description}</div>}
+        </div>
+        {user.id === selectedCommunity.owner_id && (
+          <button onClick={() => setShowManageRequests(true)} style={{ padding: "8px 14px", borderRadius: "8px", border: "1px solid #9B6BFF", background: "transparent", color: "#9B6BFF", cursor: "pointer", fontSize: "12px" }}>
+            👥 {t("manage_requests")} ({pendingRequests(selectedCommunity.id).length})
+          </button>
+        )}
+      </div>
+    </div>
+
+    {/* تبويبات المجتمع */}
+    <div style={{ display: "flex", gap: "6px", marginBottom: "20px", flexWrap: "wrap" }}>
+      {([
+  { key: "chat", icon: "💬", label: t("tab_chat") },
+  { key: "posts", icon: "📝", label: t("tab_posts") },
+  { key: "videos", icon: "🎬", label: t("tab_videos") },
+  { key: "announcements", icon: "📌", label: t("announcements_tab") },
+  { key: "members", icon: "👥", label: t("community_members") },
+] as const).map((tb) => (
+        <button key={tb.key} onClick={() => setCommunityTab(tb.key)} style={{
+          padding: "8px 16px", borderRadius: "8px", border: "none",
+          background: communityTab === tb.key ? selectedCommunity.color : "#1A1826",
+          color: communityTab === tb.key ? "white" : "#9C97B8",
+          cursor: "pointer", fontWeight: communityTab === tb.key ? "bold" : "normal",
+          fontSize: "13px",
+        }}>
+          {tb.icon} {tb.label}
+        </button>
+      ))}
+    </div>
+
+    {/* ===== شات المجتمع ===== */}
+    {communityTab === "chat" && (
+      <div>
+        <div style={{ background: "#1A1826", borderRadius: "12px", padding: "16px", height: "400px", overflowY: "auto", marginBottom: "12px", display: "flex", flexDirection: "column", gap: "10px", direction: "ltr" }}>
+          {communityMessages.length === 0 && <div style={{ color: "#635E80", textAlign: "center", marginTop: "40px" }}>{t("no_messages_community")}</div>}
+          {communityMessages.map((msg) => (
+            <div key={msg.id} style={{ display: "flex", gap: "8px", alignItems: "flex-start" }}>
+              <Avatar name={usernameFor(msg.user_id)} avatarUrl={avatarUrlFor(msg.user_id)} size={32} onClick={() => viewProfile(msg.user_id)} />
+              <div>
+                <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "2px" }}>
+                  <span style={{ color: "#9B6BFF", fontSize: "12px", fontWeight: "bold", cursor: "pointer" }} onClick={() => viewProfile(msg.user_id)}>{usernameFor(msg.user_id)}</span>
+                  {isPremiumUser(msg.user_id) && <span style={{ fontSize: "10px" }}>💎</span>}
+                  {msg.user_id === selectedCommunity.owner_id && <span style={{ background: selectedCommunity.color, color: "white", fontSize: "9px", padding: "1px 5px", borderRadius: "6px" }}>👑 {t("founder_label")}</span>}
+                  <span style={{ color: "#635E80", fontSize: "10px" }}>{timeAgo(msg.created_at)}</span>
                 </div>
-                <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginTop: "12px" }}>
-                  {selectedCommunity.game_name && <span style={{ background: "#221F32", color: "#9B6BFF", padding: "4px 10px", borderRadius: "20px", fontSize: "12px" }}>🎮 {selectedCommunity.game_name}</span>}
-                  {selectedCommunity.edit_type && <span style={{ background: "#221F32", color: "#FF3D8A", padding: "4px 10px", borderRadius: "20px", fontSize: "12px" }}>🎬 {selectedCommunity.edit_type}</span>}
-                  {selectedCommunity.movies_genre && <span style={{ background: "#221F32", color: "#FFC24B", padding: "4px 10px", borderRadius: "20px", fontSize: "12px" }}>🎥 {selectedCommunity.movies_genre}</span>}
-                  {selectedCommunity.sport_type && <span style={{ background: "#221F32", color: "#22D3EE", padding: "4px 10px", borderRadius: "20px", fontSize: "12px" }}>⚽ {selectedCommunity.sport_type}</span>}
-                </div>
-              </div>
-              <div style={{ background: "#1A1826", borderRadius: "12px", padding: "16px" }}>
-                <div style={{ color: "white", fontWeight: "bold", marginBottom: "12px" }}>{t("community_members")}</div>
-                {communityMembers.filter((m) => m.community_id === selectedCommunity.id && m.status === "approved").map((m) => (
-                  <div key={m.id} onClick={() => viewProfile(m.user_id)} style={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", padding: "6px", borderRadius: "8px" }}
-                    onMouseEnter={(e) => (e.currentTarget.style.background = "#221F32")}
-                    onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
-                    <Avatar name={usernameFor(m.user_id)} avatarUrl={avatarUrlFor(m.user_id)} size={32} />
-                    <span style={{ color: "white", fontSize: "14px" }}>{usernameFor(m.user_id)}</span>
-                    {m.user_id === selectedCommunity.owner_id && <span style={{ background: "#9B6BFF", color: "white", fontSize: "10px", padding: "2px 6px", borderRadius: "10px" }}>👑</span>}
-                    {isPremiumUser(m.user_id) && <span style={{ fontSize: "11px" }}>💎</span>}
-                  </div>
-                ))}
+                <div style={{ background: "#221F32", padding: "8px 12px", borderRadius: "10px", color: "white", fontSize: "14px", maxWidth: "380px" }}>{msg.text}</div>
               </div>
             </div>
+          ))}
+          <div ref={communityMessagesEndRef} />
+        </div>
+        <div style={{ display: "flex", gap: "8px" }}>
+          <input
+            value={newCommunityMessage}
+            onChange={(e) => setNewCommunityMessage(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && sendCommunityMessage()}
+            placeholder={t("type_message_placeholder")}
+            style={{ flex: 1, padding: "10px 14px", borderRadius: "10px", border: "1px solid #2E2A42", background: "#1A1826", color: "white", fontSize: "14px", outline: "none" }}
+          />
+          <button onClick={sendCommunityMessage} disabled={sendingCommunityMessage || !newCommunityMessage.trim()} style={{ padding: "10px 20px", borderRadius: "10px", border: "none", background: selectedCommunity.color, color: "white", cursor: "pointer", opacity: sendingCommunityMessage ? 0.6 : 1 }}>
+           {t("send")}
+          </button>
+        </div>
+      </div>
+    )}
+
+    {/* ===== منشورات المجتمع ===== */}
+    {communityTab === "posts" && (
+      <div>
+        <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "20px" }}>
+          {communityPosts.filter((p) => !p.is_announcement).length === 0 && (
+            <div style={{ color: "#635E80", textAlign: "center", padding: "30px", background: "#1A1826", borderRadius: "12px" }}>{t("no_posts_community")}</div>
           )}
+          {communityPosts.filter((p) => !p.is_announcement).map((post) => (
+            <div key={post.id} style={{ background: "#1A1826", borderRadius: "12px", padding: "16px", border: "1px solid #2E2A42" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "8px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <Avatar name={usernameFor(post.user_id)} avatarUrl={avatarUrlFor(post.user_id)} size={32} onClick={() => viewProfile(post.user_id)} />
+                  <div>
+                    <div style={{ color: "white", fontWeight: "bold", fontSize: "15px" }}>{post.title}</div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                      <span style={{ color: "#9B6BFF", fontSize: "12px", cursor: "pointer" }} onClick={() => viewProfile(post.user_id)}>{usernameFor(post.user_id)}</span>
+                      {post.user_id === selectedCommunity.owner_id && <span style={{ background: selectedCommunity.color, color: "white", fontSize: "9px", padding: "1px 5px", borderRadius: "6px" }}>👑</span>}
+                      <span style={{ color: "#635E80", fontSize: "11px" }}>{timeAgo(post.created_at)}</span>
+                    </div>
+                  </div>
+                </div>
+                {(user.id === post.user_id || user.id === selectedCommunity.owner_id) && (
+                  <button onClick={() => deleteCommunityPost(post.id)} style={{ background: "transparent", border: "none", color: "#635E80", cursor: "pointer", fontSize: "16px" }}>🗑️</button>
+                )}
+              </div>
+              {post.body && <div style={{ color: "#9C97B8", fontSize: "14px", marginBottom: "10px", lineHeight: "1.5" }}>{post.body}</div>}
+              <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "10px" }}>
+                <button onClick={() => toggleCommunityPostLike(post.id)} style={{ padding: "5px 12px", borderRadius: "8px", border: "1px solid #2E2A42", background: isCommunityPostLikedByMe(post.id) ? "#9B6BFF" : "transparent", color: isCommunityPostLikedByMe(post.id) ? "white" : "#9C97B8", cursor: "pointer", fontSize: "13px" }}>
+                  ♥ {communityPostLikeCount(post.id)}
+                </button>
+                <span style={{ color: "#635E80", fontSize: "12px" }}>💬 {communityPostCommentsFor(post.id).length}</span>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                {communityPostCommentsFor(post.id).map((c) => (
+                  <div key={c.id} style={{ fontSize: "13px", display: "flex", gap: "6px", alignItems: "flex-start" }}>
+                    <Avatar name={usernameFor(c.user_id)} avatarUrl={avatarUrlFor(c.user_id)} size={22} onClick={() => viewProfile(c.user_id)} />
+                    <div style={{ background: "#100F17", padding: "5px 10px", borderRadius: "8px", flex: 1 }}>
+                      <span style={{ color: "#9B6BFF", fontWeight: "bold", cursor: "pointer", fontSize: "11px" }} onClick={() => viewProfile(c.user_id)}>{usernameFor(c.user_id)}: </span>
+                      <span style={{ color: "#EDEAF6" }}>{c.text}</span>
+                    </div>
+                    {(c.user_id === user.id || user.id === selectedCommunity.owner_id) && (
+                      <button onClick={async () => { await supabase.from("community_post_comments").delete().eq("id", c.id); fetchCommunityData(selectedCommunity.id); }} style={{ background: "transparent", border: "none", color: "#635E80", cursor: "pointer" }}>✕</button>
+                    )}
+                  </div>
+                ))}
+                <div style={{ display: "flex", gap: "6px", marginTop: "4px" }}>
+                  <input value={newCommunityPostCommentText[post.id] || ""} onChange={(e) => setNewCommunityPostCommentText((prev) => ({ ...prev, [post.id]: e.target.value }))} onKeyDown={(e) => e.key === "Enter" && addCommunityPostComment(post.id)} placeholder={t("write_comment_placeholder")}
+ style={{ flex: 1, padding: "6px 10px", borderRadius: "6px", border: "1px solid #2E2A42", background: "#100F17", color: "white", fontSize: "13px", outline: "none" }} />
+                  <button onClick={() => addCommunityPostComment(post.id)} style={{ padding: "6px 12px", borderRadius: "6px", border: "none", background: selectedCommunity.color, color: "white", cursor: "pointer", fontSize: "13px" }}>{t("comment_button")}</button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* نشر منشور جديد */}
+        <div style={{ background: "#1A1826", borderRadius: "12px", padding: "16px", border: "1px solid #2E2A42" }}>
+          <div style={{ color: "white", fontWeight: "bold", marginBottom: "12px" }}>📝 {t("new_post")}</div>
+          <input value={newCommunityPostTitle} onChange={(e) => setNewCommunityPostTitle(e.target.value)} placeholder={t("post_title_placeholder")} style={{ width: "100%", padding: "10px", borderRadius: "8px", border: "1px solid #2E2A42", background: "#100F17", color: "white", marginBottom: "8px", boxSizing: "border-box" }} />
+          <textarea value={newCommunityPostBody} onChange={(e) => setNewCommunityPostBody(e.target.value)} placeholder={t("post_body_placeholder")} rows={3} style={{ width: "100%", padding: "10px", borderRadius: "8px", border: "1px solid #2E2A42", background: "#100F17", color: "white", marginBottom: "8px", fontFamily: "inherit", boxSizing: "border-box", resize: "none" }} />
+          <button onClick={addCommunityPost} disabled={publishingCommunityPost || !newCommunityPostTitle.trim()} style={{ padding: "10px 24px", borderRadius: "8px", border: "none", background: selectedCommunity.color, color: "white", cursor: "pointer", opacity: publishingCommunityPost || !newCommunityPostTitle.trim() ? 0.6 : 1, fontWeight: "bold" }}>
+            {publishingCommunityPost ? t("publishing") : t("publish")}
+          </button>
+        </div>
+      </div>
+    )}
+
+    {/* ===== فيديوهات المجتمع ===== */}
+    {communityTab === "videos" && (
+      <div>
+        <div style={{ display: "flex", flexDirection: "column", gap: "16px", marginBottom: "20px" }}>
+          {communityVideos.length === 0 && (
+            <div style={{ color: "#635E80", textAlign: "center", padding: "30px", background: "#1A1826", borderRadius: "12px" }}>{t("no_videos_community")}</div>
+          )}
+          {communityVideos.map((video) => (
+            <div key={video.id} style={{ background: "#1A1826", borderRadius: "12px", padding: "16px", border: "1px solid #2E2A42" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                <div style={{ color: "white", fontWeight: "bold" }}>{video.title}</div>
+                {(user.id === video.user_id || user.id === selectedCommunity.owner_id) && (
+                  <button onClick={async () => { await supabase.from("community_videos").delete().eq("id", video.id); fetchCommunityData(selectedCommunity.id); }} style={{ background: "transparent", border: "none", color: "#635E80", cursor: "pointer" }}>🗑️</button>
+                )}
+              </div>
+              <div onClick={() => viewProfile(video.user_id)} style={{ display: "flex", alignItems: "center", gap: "6px", cursor: "pointer", marginBottom: "10px" }}>
+                <Avatar name={usernameFor(video.user_id)} avatarUrl={avatarUrlFor(video.user_id)} size={20} />
+                <span style={{ color: "#9B6BFF", fontSize: "12px" }}>{usernameFor(video.user_id)}</span>
+                {video.user_id === selectedCommunity.owner_id && <span style={{ background: selectedCommunity.color, color: "white", fontSize: "9px", padding: "1px 5px", borderRadius: "6px" }}>👑</span>}
+                <span style={{ color: "#635E80", fontSize: "11px" }}>{timeAgo(video.created_at)}</span>
+              </div>
+              <video src={video.url} controls style={{ width: "100%", borderRadius: "8px", marginBottom: "10px" }} />
+              <button onClick={() => toggleCommunityVideoLike(video.id)} style={{ padding: "5px 12px", borderRadius: "8px", border: "1px solid #2E2A42", background: isCommunityVideoLikedByMe(video.id) ? "#9B6BFF" : "transparent", color: isCommunityVideoLikedByMe(video.id) ? "white" : "#9C97B8", cursor: "pointer", fontSize: "13px", marginBottom: "10px" }}>
+                ♥ {communityVideoLikeCount(video.id)}
+              </button>
+              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                {communityVideoCommentsFor(video.id).map((c) => (
+                  <div key={c.id} style={{ fontSize: "13px", display: "flex", gap: "6px", alignItems: "flex-start" }}>
+                    <Avatar name={usernameFor(c.user_id)} avatarUrl={avatarUrlFor(c.user_id)} size={22} onClick={() => viewProfile(c.user_id)} />
+                    <div style={{ background: "#100F17", padding: "5px 10px", borderRadius: "8px", flex: 1 }}>
+                      <span style={{ color: "#9B6BFF", fontWeight: "bold", cursor: "pointer", fontSize: "11px" }} onClick={() => viewProfile(c.user_id)}>{usernameFor(c.user_id)}: </span>
+                      <span style={{ color: "#EDEAF6" }}>{c.text}</span>
+                    </div>
+                    {(c.user_id === user.id || user.id === selectedCommunity.owner_id) && (
+                      <button onClick={async () => { await supabase.from("community_video_comments").delete().eq("id", c.id); fetchCommunityData(selectedCommunity.id); }} style={{ background: "transparent", border: "none", color: "#635E80", cursor: "pointer" }}>✕</button>
+                    )}
+                  </div>
+                ))}
+                <div style={{ display: "flex", gap: "6px", marginTop: "4px" }}>
+                  <input value={newCommunityVideoCommentText[video.id] || ""} onChange={(e) => setNewCommunityVideoCommentText((prev) => ({ ...prev, [video.id]: e.target.value }))} onKeyDown={(e) => e.key === "Enter" && addCommunityVideoComment(video.id)} placeholder={t("write_comment_placeholder")} style={{ flex: 1, padding: "6px 10px", borderRadius: "6px", border: "1px solid #2E2A42", background: "#100F17", color: "white", fontSize: "13px", outline: "none" }} />
+                  <button onClick={() => addCommunityVideoComment(video.id)} style={{ padding: "6px 12px", borderRadius: "6px", border: "none", background: selectedCommunity.color, color: "white", cursor: "pointer", fontSize: "13px" }}>{t("comment_button")}</button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        {/* رفع فيديو جديد */}
+        <div style={{ background: "#1A1826", borderRadius: "12px", padding: "16px", border: "1px solid #2E2A42" }}>
+          <div style={{ color: "white", fontWeight: "bold", marginBottom: "12px" }}>🎬 {t("new_video")}</div>
+          <input value={newCommunityVideoTitle} onChange={(e) => setNewCommunityVideoTitle(e.target.value)} placeholder={t("video_title_placeholder")} style={{ width: "100%", padding: "10px", borderRadius: "8px", border: "1px solid #2E2A42", background: "#100F17", color: "white", marginBottom: "8px", boxSizing: "border-box" }} />
+          <input type="file" accept="video/*" onChange={(e) => setNewCommunityVideoFile(e.target.files?.[0] || null)} style={{ color: "#9C97B8", fontSize: "13px", marginBottom: "8px" }} />
+          <button onClick={uploadCommunityVideo} disabled={uploadingCommunityVideo || !newCommunityVideoTitle.trim() || !newCommunityVideoFile} style={{ padding: "10px 24px", borderRadius: "8px", border: "none", background: selectedCommunity.color, color: "white", cursor: "pointer", opacity: uploadingCommunityVideo || !newCommunityVideoTitle.trim() || !newCommunityVideoFile ? 0.6 : 1, fontWeight: "bold" }}>
+            {uploadingCommunityVideo ? t("uploading_video") : t("upload_video")}
+          </button>
+        </div>
+      </div>
+    )}
+
+    {/* ===== الإعلانات ===== */}
+    {communityTab === "announcements" && (
+      <div>
+        <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "20px" }}>
+          {communityPosts.filter((p) => p.is_announcement).length === 0 && (
+            <div style={{ color: "#635E80", textAlign: "center", padding: "30px", background: "#1A1826", borderRadius: "12px" }}>{t("no_announcements")}</div>
+          )}
+          {communityPosts.filter((p) => p.is_announcement).map((post) => (
+            <div key={post.id} style={{ background: "#1A1826", borderRadius: "12px", padding: "16px", border: `2px solid ${selectedCommunity.color}`, position: "relative" }}>
+              <div style={{ position: "absolute", top: "12px", right: "12px", background: selectedCommunity.color, color: "white", fontSize: "10px", padding: "2px 8px", borderRadius: "10px", fontWeight: "bold" }}>📌 {t("announcement_label")}</div>
+              <div style={{ color: "white", fontWeight: "bold", fontSize: "16px", marginBottom: "6px", paddingRight: "70px" }}>{post.title}</div>
+              <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "8px" }}>
+                <Avatar name={usernameFor(post.user_id)} avatarUrl={avatarUrlFor(post.user_id)} size={22} />
+                <span style={{ color: "#9B6BFF", fontSize: "12px" }}>{usernameFor(post.user_id)}</span>
+                <span style={{ background: selectedCommunity.color, color: "white", fontSize: "9px", padding: "1px 5px", borderRadius: "6px" }}>👑 {t("founder_label")} {t("founder_label")}</span>
+                <span style={{ color: "#635E80", fontSize: "11px" }}>{timeAgo(post.created_at)}</span>
+              </div>
+              {post.body && <div style={{ color: "#9C97B8", fontSize: "14px", lineHeight: "1.5" }}>{post.body}</div>}
+              {user.id === selectedCommunity.owner_id && (
+                <button onClick={() => deleteCommunityPost(post.id)} style={{ background: "transparent", border: "none", color: "#635E80", cursor: "pointer", marginTop: "8px", fontSize: "13px" }}>🗑 {t("delete_btn")}</button>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* نشر إعلان — المؤسس فقط */}
+        {user.id === selectedCommunity.owner_id && (
+          <div style={{ background: "#1A1826", borderRadius: "12px", padding: "16px", border: `2px solid ${selectedCommunity.color}` }}>
+            <div style={{ color: "white", fontWeight: "bold", marginBottom: "12px" }}>📌 {t("new_announcement")}<span style={{ color: "#635E80", fontSize: "12px", fontWeight: "normal" }}>({t("founder_only_note")})</span></div>
+            <input value={newAnnouncementTitle} onChange={(e) => setNewAnnouncementTitle(e.target.value)} placeholder={t("post_title_placeholder")} style={{ width: "100%", padding: "10px", borderRadius: "8px", border: "1px solid #2E2A42", background: "#100F17", color: "white", marginBottom: "8px", boxSizing: "border-box" }} />
+            <textarea value={newAnnouncementBody} onChange={(e) => setNewAnnouncementBody(e.target.value)} placeholder={t("post_body_placeholder")} style={{ width: "100%", padding: "10px", borderRadius: "8px", border: "1px solid #2E2A42", background: "#100F17", color: "white", marginBottom: "8px", fontFamily: "inherit", boxSizing: "border-box", resize: "none" }} />
+            <button onClick={addAnnouncement} disabled={publishingAnnouncement || !newAnnouncementTitle.trim()} style={{ padding: "10px 24px", borderRadius: "8px", border: "none", background: `linear-gradient(135deg, ${selectedCommunity.color}, #FF3D8A)`, color: "white", cursor: "pointer", opacity: publishingAnnouncement || !newAnnouncementTitle.trim() ? 0.6 : 1, fontWeight: "bold" }}>
+              {publishingAnnouncement ? t("publishing_announcement") : t("publish_announcement")}
+            </button>
+          </div>
+        )}
+      </div>
+    )}
+
+    {/* ===== الأعضاء ===== */}
+    {communityTab === "members" && (
+      <div style={{ background: "#1A1826", borderRadius: "12px", padding: "16px" }}>
+        <div style={{ color: "white", fontWeight: "bold", marginBottom: "16px", fontSize: "16px" }}>
+          👥 {t("community_members")} ({communityMembersCount(selectedCommunity.id)})
+        </div>
+        {communityMembers.filter((m) => m.community_id === selectedCommunity.id && m.status === "approved").map((m) => (
+          <div key={m.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px", borderRadius: "10px", marginBottom: "6px" }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = "#221F32")}
+            onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
+            <div onClick={() => viewProfile(m.user_id)} style={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", flex: 1 }}>
+              <Avatar name={usernameFor(m.user_id)} avatarUrl={avatarUrlFor(m.user_id)} size={38} />
+              <div>
+                <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                  <span style={{ color: "white", fontSize: "14px", fontWeight: "bold" }}>{usernameFor(m.user_id)}</span>
+                  {m.user_id === selectedCommunity.owner_id && <span style={{ background: selectedCommunity.color, color: "white", fontSize: "10px", padding: "2px 6px", borderRadius: "8px" }}>{t("founder_label")} 👑</span>}
+                  {isPremiumUser(m.user_id) && <span style={{ fontSize: "11px" }}>💎</span>}
+                </div>
+              </div>
+            </div>
+            {/* أزرار المؤسس */}
+            {user.id === selectedCommunity.owner_id && m.user_id !== selectedCommunity.owner_id && (
+              <div style={{ display: "flex", gap: "6px" }}>
+                <button
+                  onClick={() => { setActiveDmUserId(m.user_id); setDmPanelOpen(true); }}
+                  style={{ padding: "5px 10px", borderRadius: "6px", border: "1px solid #2E2A42", background: "transparent", color: "#9C97B8", cursor: "pointer", fontSize: "12px" }}
+                >
+                  ✉️
+                </button>
+                <button
+                  onClick={() => kickMember(m.user_id)}
+                  style={{ padding: "5px 10px", borderRadius: "6px", border: "1px solid #FF3D8A", background: "transparent", color: "#FF3D8A", cursor: "pointer", fontSize: "12px" }}
+                >
+                  {t("kick_member")}                </button>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+)}
 
           {selectedCommunity && showManageRequests && (
             <div>
@@ -1303,124 +2061,394 @@ export default function Home() {
           )}
 
           {showCreateCommunity && !selectedCommunity && (
-            <div>
-              <button onClick={() => setShowCreateCommunity(false)} style={{ background: "transparent", border: "none", color: "#9B6BFF", cursor: "pointer", fontSize: "13px", marginBottom: "20px", padding: 0 }}>{t("back_to_communities")}</button>
-              <div style={{ background: "#1A1826", borderRadius: "16px", padding: "24px" }}>
-                <div style={{ color: "white", fontWeight: "bold", fontSize: "20px", marginBottom: "20px" }}>{t("create_community")}</div>
-                <div style={{ marginBottom: "14px" }}><div style={{ color: "#9C97B8", fontSize: "13px", marginBottom: "6px" }}>{t("community_name")} *</div><input value={newCommunityName} onChange={(e) => setNewCommunityName(e.target.value)} style={inputStyle} /></div>
-                <div style={{ marginBottom: "14px" }}><div style={{ color: "#9C97B8", fontSize: "13px", marginBottom: "6px" }}>{t("community_desc")}</div><textarea value={newCommunityDesc} onChange={(e) => setNewCommunityDesc(e.target.value)} rows={3} style={{ ...inputStyle, resize: "none" }} /></div>
-                <div style={{ marginBottom: "14px" }}>
-                  <div style={{ color: "#9C97B8", fontSize: "13px", marginBottom: "6px" }}>{t("community_color")}</div>
-                  <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-                    {["#9B6BFF", "#FF3D8A", "#FFC24B", "#22D3EE", "#4ADE80", "#F97316", "#EC4899"].map((color) => (
-                      <div key={color} onClick={() => setNewCommunityColor(color)} style={{ width: "28px", height: "28px", borderRadius: "50%", background: color, cursor: "pointer", border: newCommunityColor === color ? "3px solid white" : "3px solid transparent" }} />
-                    ))}
-                    <input type="color" value={newCommunityColor} onChange={(e) => setNewCommunityColor(e.target.value)} style={{ width: "32px", height: "32px", borderRadius: "50%", border: "none", cursor: "pointer" }} />
-                  </div>
-                </div>
-                <label style={{ display: "flex", alignItems: "center", gap: "8px", color: "#9C97B8", fontSize: "13px", cursor: "pointer", marginBottom: "20px" }}>
-                  <input type="checkbox" checked={newCommunityPrivate} onChange={(e) => setNewCommunityPrivate(e.target.checked)} />
-                  {t("community_private")}
-                </label>
+  <div>
+    <button onClick={() => setShowCreateCommunity(false)} style={{ background: "transparent", border: "none", color: "#9B6BFF", cursor: "pointer", fontSize: "13px", marginBottom: "20px", padding: 0 }}>
+      {t("back_to_communities")}
+    </button>
+    <div style={{ background: "#1A1826", borderRadius: "16px", padding: "24px" }}>
+      <div style={{ color: "white", fontWeight: "bold", fontSize: "20px", marginBottom: "20px" }}>
+        {t("create_community")}
+      </div>
 
-                {selectedId === "gaming" && (
-                  <div style={{ borderTop: "1px solid #2E2A42", paddingTop: "16px", marginBottom: "16px" }}>
-                    <div style={{ color: "#9B6BFF", fontSize: "13px", fontWeight: "bold", marginBottom: "12px" }}>🎮 {t("section_gaming")}</div>
-                    <div style={{ marginBottom: "10px" }}><div style={{ color: "#9C97B8", fontSize: "12px", marginBottom: "5px" }}>{t("game_name_label")}</div><input value={newGameName} onChange={(e) => setNewGameName(e.target.value)} placeholder="Fortnite, FIFA..." style={inputStyle} /></div>
-                    <div style={{ marginBottom: "10px" }}><div style={{ color: "#9C97B8", fontSize: "12px", marginBottom: "5px" }}>{t("game_platform_label")}</div><select value={newGamePlatform} onChange={(e) => setNewGamePlatform(e.target.value)} style={selectStyle}><option value="">-- اختر --</option><option>PC</option><option>PlayStation</option><option>Xbox</option><option>Mobile</option><option>Nintendo Switch</option></select></div>
-                    <div style={{ marginBottom: "10px" }}><div style={{ color: "#9C97B8", fontSize: "12px", marginBottom: "5px" }}>{t("game_type_label")}</div><select value={newGameType} onChange={(e) => setNewGameType(e.target.value)} style={selectStyle}><option value="">-- اختر --</option><option>تنافسي</option><option>كاجوال</option><option>ألعاب تطوير</option><option>استراتيجية</option><option>RPG</option></select></div>
-                  </div>
-                )}
-                {selectedId === "editing" && (
-                  <div style={{ borderTop: "1px solid #2E2A42", paddingTop: "16px", marginBottom: "16px" }}>
-                    <div style={{ color: "#FF3D8A", fontSize: "13px", fontWeight: "bold", marginBottom: "12px" }}>🎬 {t("section_editing")}</div>
-                    <div style={{ marginBottom: "10px" }}><div style={{ color: "#9C97B8", fontSize: "12px", marginBottom: "5px" }}>{t("edit_type_label")}</div><select value={newEditType} onChange={(e) => setNewEditType(e.target.value)} style={selectStyle}><option value="">-- اختر --</option><option>كليب فيديو</option><option>ريلز/شورتس</option><option>سينمائي</option><option>جرافيك موشن</option><option>VFX</option></select></div>
-                    <div style={{ marginBottom: "10px" }}><div style={{ color: "#9C97B8", fontSize: "12px", marginBottom: "5px" }}>{t("edit_software_label")}</div><select value={newEditSoftware} onChange={(e) => setNewEditSoftware(e.target.value)} style={selectStyle}><option value="">-- اختر --</option><option>Adobe Premiere</option><option>After Effects</option><option>CapCut</option><option>DaVinci Resolve</option><option>Final Cut Pro</option></select></div>
-                    <div style={{ marginBottom: "10px" }}><div style={{ color: "#9C97B8", fontSize: "12px", marginBottom: "5px" }}>{t("edit_level_label")}</div><select value={newEditLevel} onChange={(e) => setNewEditLevel(e.target.value)} style={selectStyle}><option value="">-- اختر --</option><option>مبتدئ</option><option>متوسط</option><option>محترف</option></select></div>
-                  </div>
-                )}
-                {selectedId === "movies" && (
-                  <div style={{ borderTop: "1px solid #2E2A42", paddingTop: "16px", marginBottom: "16px" }}>
-                    <div style={{ color: "#FFC24B", fontSize: "13px", fontWeight: "bold", marginBottom: "12px" }}>🎥 {t("section_movies")}</div>
-                    <div style={{ marginBottom: "10px" }}><div style={{ color: "#9C97B8", fontSize: "12px", marginBottom: "5px" }}>{t("movies_genre_label")}</div><select value={newMoviesGenre} onChange={(e) => setNewMoviesGenre(e.target.value)} style={selectStyle}><option value="">-- اختر --</option><option>أكشن</option><option>رومانسي</option><option>رعب</option><option>كوميدي</option><option>دراما</option><option>خيال علمي</option><option>أنمي</option></select></div>
-                    <div style={{ marginBottom: "10px" }}><div style={{ color: "#9C97B8", fontSize: "12px", marginBottom: "5px" }}>{t("movies_source_label")}</div><select value={newMoviesSource} onChange={(e) => setNewMoviesSource(e.target.value)} style={selectStyle}><option value="">-- اختر --</option><option>Netflix</option><option>Disney+</option><option>Amazon Prime</option><option>كوري</option><option>هندي</option><option>عربي</option><option>أنمي</option></select></div>
-                    <div style={{ marginBottom: "10px" }}><div style={{ color: "#9C97B8", fontSize: "12px", marginBottom: "5px" }}>{t("movies_language_label")}</div><select value={newMoviesLanguage} onChange={(e) => setNewMoviesLanguage(e.target.value)} style={selectStyle}><option value="">-- اختر --</option><option>عربي</option><option>إنجليزي</option><option>كوري</option><option>ياباني</option><option>هندي</option><option>فرنسي</option></select></div>
-                  </div>
-                )}
-                {selectedId === "sports" && (
-                  <div style={{ borderTop: "1px solid #2E2A42", paddingTop: "16px", marginBottom: "16px" }}>
-                    <div style={{ color: "#22D3EE", fontSize: "13px", fontWeight: "bold", marginBottom: "12px" }}>⚽ {t("section_sports")}</div>
-                    <div style={{ marginBottom: "10px" }}><div style={{ color: "#9C97B8", fontSize: "12px", marginBottom: "5px" }}>{t("sport_type_label")}</div><select value={newSportType} onChange={(e) => setNewSportType(e.target.value)} style={selectStyle}><option value="">-- اختر --</option><option>كرة قدم</option><option>كرة سلة</option><option>تنس</option><option>سباحة</option><option>كرة طائرة</option><option>ألعاب قوى</option></select></div>
-                    <div style={{ marginBottom: "10px" }}><div style={{ color: "#9C97B8", fontSize: "12px", marginBottom: "5px" }}>{t("sport_team_label")}</div><input value={newSportTeam} onChange={(e) => setNewSportTeam(e.target.value)} placeholder="ريال مدريد..." style={inputStyle} /></div>
-                    <div style={{ marginBottom: "10px" }}><div style={{ color: "#9C97B8", fontSize: "12px", marginBottom: "5px" }}>{t("sport_content_label")}</div><select value={newSportContent} onChange={(e) => setNewSportContent(e.target.value)} style={selectStyle}><option value="">-- اختر --</option><option>أخبار</option><option>تحليل مباريات</option><option>مباريات مباشرة</option><option>إحصائيات</option></select></div>
-                  </div>
-                )}
+      <div style={{ marginBottom: "14px" }}>
+        <div style={{ color: "#9C97B8", fontSize: "13px", marginBottom: "6px" }}>{t("community_name")} *</div>
+        <input value={newCommunityName} onChange={(e) => setNewCommunityName(e.target.value)} style={inputStyle} />
+      </div>
 
-                <button onClick={createCommunity} disabled={creatingCommunity || !newCommunityName.trim()} style={{ width: "100%", padding: "12px", borderRadius: "10px", border: "none", background: "linear-gradient(135deg, #9B6BFF, #FF3D8A)", color: "white", cursor: "pointer", fontSize: "15px", fontWeight: "bold", opacity: creatingCommunity || !newCommunityName.trim() ? 0.6 : 1 }}>
-                  {creatingCommunity ? t("creating") : t("create_community")}
-                </button>
-              </div>
-            </div>
-          )}
+      <div style={{ marginBottom: "14px" }}>
+        <div style={{ color: "#9C97B8", fontSize: "13px", marginBottom: "6px" }}>{t("community_desc")}</div>
+        <textarea value={newCommunityDesc} onChange={(e) => setNewCommunityDesc(e.target.value)} rows={3} style={{ ...inputStyle, resize: "none" }} />
+      </div>
 
-          {!selectedCommunity && !showCreateCommunity && (
-            <div>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
-                <div style={{ color: "white", fontWeight: "bold", fontSize: "20px" }}>{t("communities_title")} — {selectedSection?.name}</div>
-                {myProfile.is_premium ? (
-                  <button onClick={() => setShowCreateCommunity(true)} style={{ display: "flex", alignItems: "center", gap: "6px", padding: "8px 16px", borderRadius: "10px", border: "none", background: "linear-gradient(135deg, #9B6BFF, #FF3D8A)", color: "white", cursor: "pointer", fontSize: "14px", fontWeight: "bold" }}>
-                    <span style={{ fontSize: "18px" }}>+</span> {t("create_community")}
-                  </button>
-                ) : (
-                  <div style={{ color: "#9C97B8", fontSize: "12px", background: "#1A1826", padding: "8px 12px", borderRadius: "8px", border: "1px solid #2E2A42" }}>{t("premium_required")}</div>
-                )}
-              </div>
-              {communitiesForSection.length === 0 ? (
-                <div style={{ color: "#635E80", textAlign: "center", padding: "40px", background: "#1A1826", borderRadius: "12px" }}>{t("no_communities")}</div>
-              ) : (
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "16px" }}>
-                  {communitiesForSection.map((community) => {
-                    const status = myMembershipStatus(community.id);
-                    const isOwner = user.id === community.owner_id;
-                    return (
-                      <div key={community.id} style={{ background: "#1A1826", borderRadius: "14px", overflow: "hidden", border: "1px solid #2E2A42", transition: "transform 0.2s" }}
-                        onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
-                        onMouseLeave={(e) => (e.currentTarget.style.transform = "translateY(0)")}>
-                        <div style={{ height: "6px", background: community.color }} />
-                        <div style={{ padding: "16px" }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "10px" }}>
-                            <div style={{ width: "44px", height: "44px", borderRadius: "10px", background: community.color, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "20px", fontWeight: "bold", color: "white", flexShrink: 0 }}>{community.name.charAt(0).toUpperCase()}</div>
-                            <div style={{ flex: 1, minWidth: 0 }}>
-                              <div style={{ color: "white", fontWeight: "bold", fontSize: "15px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{community.name}</div>
-                              <div style={{ color: "#9C97B8", fontSize: "11px" }}>{communityMembersCount(community.id)} {t("members_count")} • {t("owner_label")}: {usernameFor(community.owner_id)}</div>
-                            </div>
-                            {community.is_private && <span>🔒</span>}
-                          </div>
-                          {community.description && <div style={{ color: "#9C97B8", fontSize: "13px", marginBottom: "10px", overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const }}>{community.description}</div>}
-                          <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginBottom: "12px" }}>
-                            {community.game_name && <span style={{ background: "#221F32", color: "#9B6BFF", padding: "2px 8px", borderRadius: "20px", fontSize: "11px" }}>🎮 {community.game_name}</span>}
-                            {community.edit_type && <span style={{ background: "#221F32", color: "#FF3D8A", padding: "2px 8px", borderRadius: "20px", fontSize: "11px" }}>🎬 {community.edit_type}</span>}
-                            {community.movies_genre && <span style={{ background: "#221F32", color: "#FFC24B", padding: "2px 8px", borderRadius: "20px", fontSize: "11px" }}>🎥 {community.movies_genre}</span>}
-                            {community.sport_type && <span style={{ background: "#221F32", color: "#22D3EE", padding: "2px 8px", borderRadius: "20px", fontSize: "11px" }}>⚽ {community.sport_type}</span>}
-                          </div>
-                          <div style={{ display: "flex", gap: "8px" }}>
-                            {(isOwner || status === "approved") && <button onClick={() => setSelectedCommunity(community)} style={{ flex: 1, padding: "8px", borderRadius: "8px", border: "none", background: community.color, color: "white", cursor: "pointer", fontSize: "13px", fontWeight: "bold" }}>{t("enter_community")}</button>}
-                            {!isOwner && !status && <button onClick={() => joinCommunity(community.id)} style={{ flex: 1, padding: "8px", borderRadius: "8px", border: `1px solid ${community.color}`, background: "transparent", color: community.color, cursor: "pointer", fontSize: "13px" }}>{t("join_community")}</button>}
-                            {!isOwner && status === "pending" && <div style={{ flex: 1, padding: "8px", borderRadius: "8px", background: "#221F32", color: "#9C97B8", fontSize: "12px", textAlign: "center" }}>{t("pending_approval")}</div>}
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          )}
+      <div style={{ marginBottom: "14px" }}>
+        <div style={{ color: "#9C97B8", fontSize: "13px", marginBottom: "6px" }}>{t("community_color")}</div>
+        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+          {["#9B6BFF", "#FF3D8A", "#FFC24B", "#22D3EE", "#4ADE80", "#F97316", "#EC4899"].map((color) => (
+            <div key={color} onClick={() => setNewCommunityColor(color)} style={{ width: "28px", height: "28px", borderRadius: "50%", background: color, cursor: "pointer", border: newCommunityColor === color ? "3px solid white" : "3px solid transparent" }} />
+          ))}
+          <input type="color" value={newCommunityColor} onChange={(e) => setNewCommunityColor(e.target.value)} style={{ width: "32px", height: "32px", borderRadius: "50%", border: "none", cursor: "pointer" }} />
+        </div>
+      </div>
+
+      <label style={{ display: "flex", alignItems: "center", gap: "8px", color: "#9C97B8", fontSize: "13px", cursor: "pointer", marginBottom: "20px" }}>
+        <input type="checkbox" checked={newCommunityPrivate} onChange={(e) => setNewCommunityPrivate(e.target.checked)} />
+        {t("community_private")}
+      </label>
+
+      {/* gaming */}
+      {selectedId === "gaming" && (
+        <div style={{ borderTop: "1px solid #2E2A42", paddingTop: "16px", marginBottom: "16px" }}>
+          <div style={{ color: "#9B6BFF", fontSize: "13px", fontWeight: "bold", marginBottom: "12px" }}>
+            🎮 {t("section_gaming")}
+          </div>
+          <div style={{ marginBottom: "10px" }}>
+            <div style={{ color: "#9C97B8", fontSize: "12px", marginBottom: "5px" }}>{t("game_name_label")}</div>
+            <input value={newGameName} onChange={(e) => setNewGameName(e.target.value)} placeholder="Fortnite, FIFA..." style={inputStyle} />
+          </div>
+          <div style={{ marginBottom: "10px" }}>
+            <div style={{ color: "#9C97B8", fontSize: "12px", marginBottom: "5px" }}>{t("game_platform_label")}</div>
+            <select value={newGamePlatform} onChange={(e) => setNewGamePlatform(e.target.value)} style={selectStyle}>
+              <option value="">-- {language === "ar" ? "اختر" : language === "fr" ? "Choisir" : "Select"} --</option>
+              <option value="PC">PC</option>
+              <option value="PlayStation">PlayStation</option>
+              <option value="Xbox">Xbox</option>
+              <option value="Mobile">Mobile</option>
+              <option value="Nintendo Switch">Nintendo Switch</option>
+            </select>
+          </div>
+          <div style={{ marginBottom: "10px" }}>
+            <div style={{ color: "#9C97B8", fontSize: "12px", marginBottom: "5px" }}>{t("game_type_label")}</div>
+            <select value={newGameType} onChange={(e) => setNewGameType(e.target.value)} style={selectStyle}>
+              <option value="">-- {language === "ar" ? "اختر" : language === "fr" ? "Choisir" : "Select"} --</option>
+              <option value="Competitive">{language === "ar" ? "تنافسي" : language === "fr" ? "Compétitif" : "Competitive"}</option>
+              <option value="Casual">{language === "ar" ? "كاجوال" : language === "fr" ? "Casual" : "Casual"}</option>
+              <option value="Game Dev">{language === "ar" ? "تطوير ألعاب" : language === "fr" ? "Dév. de jeux" : "Game Dev"}</option>
+              <option value="Strategy">{language === "ar" ? "استراتيجية" : language === "fr" ? "Stratégie" : "Strategy"}</option>
+              <option value="RPG">RPG</option>
+            </select>
+          </div>
         </div>
       )}
 
-      {/* ===== بروفايل ===== */}
-      {tab === "profile" && (() => {
+      {/* editing */}
+      {selectedId === "editing" && (
+        <div style={{ borderTop: "1px solid #2E2A42", paddingTop: "16px", marginBottom: "16px" }}>
+          <div style={{ color: "#FF3D8A", fontSize: "13px", fontWeight: "bold", marginBottom: "12px" }}>
+            🎬 {t("section_editing")}
+          </div>
+          <div style={{ marginBottom: "10px" }}>
+            <div style={{ color: "#9C97B8", fontSize: "12px", marginBottom: "5px" }}>{t("edit_type_label")}</div>
+            <select value={newEditType} onChange={(e) => setNewEditType(e.target.value)} style={selectStyle}>
+              <option value="">-- {language === "ar" ? "اختر" : language === "fr" ? "Choisir" : "Select"} --</option>
+              <option value="Video Clip">{language === "ar" ? "فيديو كليب" : language === "fr" ? "Clip vidéo" : "Video Clip"}</option>
+              <option value="Shorts">{language === "ar" ? "شورتس/ريلز" : "Shorts/Reels"}</option>
+              <option value="Cinematic">{language === "ar" ? "سينمائي" : language === "fr" ? "Cinématique" : "Cinematic"}</option>
+              <option value="Motion Graphic">{language === "ar" ? "موشن جرافيك" : "Motion Graphic"}</option>
+              <option value="VFX">VFX</option>
+            </select>
+          </div>
+          <div style={{ marginBottom: "10px" }}>
+            <div style={{ color: "#9C97B8", fontSize: "12px", marginBottom: "5px" }}>{t("edit_software_label")}</div>
+            <select value={newEditSoftware} onChange={(e) => setNewEditSoftware(e.target.value)} style={selectStyle}>
+              <option value="">-- {language === "ar" ? "اختر" : language === "fr" ? "Choisir" : "Select"} --</option>
+              <option value="Adobe Premiere">Adobe Premiere</option>
+              <option value="After Effects">After Effects</option>
+              <option value="CapCut">CapCut</option>
+              <option value="DaVinci Resolve">DaVinci Resolve</option>
+              <option value="Final Cut Pro">Final Cut Pro</option>
+            </select>
+          </div>
+          <div style={{ marginBottom: "10px" }}>
+            <div style={{ color: "#9C97B8", fontSize: "12px", marginBottom: "5px" }}>{t("edit_level_label")}</div>
+            <select value={newEditLevel} onChange={(e) => setNewEditLevel(e.target.value)} style={selectStyle}>
+              <option value="">-- {language === "ar" ? "اختر" : language === "fr" ? "Choisir" : "Select"} --</option>
+              <option value="Beginner">{language === "ar" ? "مبتدئ" : language === "fr" ? "Débutant" : "Beginner"}</option>
+              <option value="Intermediate">{language === "ar" ? "متوسط" : language === "fr" ? "Intermédiaire" : "Intermediate"}</option>
+              <option value="Pro">{language === "ar" ? "محترف" : language === "fr" ? "Professionnel" : "Pro"}</option>
+            </select>
+          </div>
+        </div>
+      )}
+
+      {/* movies */}
+      {selectedId === "movies" && (
+        <div style={{ borderTop: "1px solid #2E2A42", paddingTop: "16px", marginBottom: "16px" }}>
+          <div style={{ color: "#FFC24B", fontSize: "13px", fontWeight: "bold", marginBottom: "12px" }}>
+            🎥 {t("section_movies")}
+          </div>
+          <div style={{ marginBottom: "10px" }}>
+            <div style={{ color: "#9C97B8", fontSize: "12px", marginBottom: "5px" }}>{t("movies_genre_label")}</div>
+            <select value={newMoviesGenre} onChange={(e) => setNewMoviesGenre(e.target.value)} style={selectStyle}>
+              <option value="">-- {language === "ar" ? "اختر" : language === "fr" ? "Choisir" : "Select"} --</option>
+              <option value="Action">{language === "ar" ? "أكشن" : language === "fr" ? "Action" : "Action"}</option>
+              <option value="Romance">{language === "ar" ? "رومانسي" : language === "fr" ? "Romance" : "Romance"}</option>
+              <option value="Horror">{language === "ar" ? "رعب" : language === "fr" ? "Horreur" : "Horror"}</option>
+              <option value="Comedy">{language === "ar" ? "كوميدي" : language === "fr" ? "Comédie" : "Comedy"}</option>
+              <option value="Drama">{language === "ar" ? "دراما" : language === "fr" ? "Drame" : "Drama"}</option>
+              <option value="Sci-Fi">{language === "ar" ? "خيال علمي" : language === "fr" ? "Sci-Fi" : "Sci-Fi"}</option>
+              <option value="Anime">{language === "ar" ? "أنمي" : "Anime"}</option>
+            </select>
+          </div>
+          <div style={{ marginBottom: "10px" }}>
+            <div style={{ color: "#9C97B8", fontSize: "12px", marginBottom: "5px" }}>{t("movies_source_label")}</div>
+            <select value={newMoviesSource} onChange={(e) => setNewMoviesSource(e.target.value)} style={selectStyle}>
+              <option value="">-- {language === "ar" ? "اختر" : language === "fr" ? "Choisir" : "Select"} --</option>
+              <option value="Netflix">Netflix</option>
+              <option value="Disney+">Disney+</option>
+              <option value="Amazon Prime">Amazon Prime</option>
+              <option value="Korean">{language === "ar" ? "كوري" : language === "fr" ? "Coréen" : "Korean"}</option>
+              <option value="Indian">{language === "ar" ? "هندي" : language === "fr" ? "Indien" : "Indian"}</option>
+              <option value="Arabic">{language === "ar" ? "عربي" : language === "fr" ? "Arabe" : "Arabic"}</option>
+              <option value="Anime">{language === "ar" ? "أنمي" : "Anime"}</option>
+            </select>
+          </div>
+          <div style={{ marginBottom: "10px" }}>
+            <div style={{ color: "#9C97B8", fontSize: "12px", marginBottom: "5px" }}>{t("movies_language_label")}</div>
+            <select value={newMoviesLanguage} onChange={(e) => setNewMoviesLanguage(e.target.value)} style={selectStyle}>
+              <option value="">-- {language === "ar" ? "اختر" : language === "fr" ? "Choisir" : "Select"} --</option>
+              <option value="Arabic">{language === "ar" ? "عربي" : language === "fr" ? "Arabe" : "Arabic"}</option>
+              <option value="English">{language === "ar" ? "إنجليزي" : language === "fr" ? "Anglais" : "English"}</option>
+              <option value="Korean">{language === "ar" ? "كوري" : language === "fr" ? "Coréen" : "Korean"}</option>
+              <option value="Japanese">{language === "ar" ? "ياباني" : language === "fr" ? "Japonais" : "Japanese"}</option>
+              <option value="Hindi">{language === "ar" ? "هندي" : language === "fr" ? "Hindi" : "Hindi"}</option>
+              <option value="French">{language === "ar" ? "فرنسي" : language === "fr" ? "Français" : "French"}</option>
+            </select>
+          </div>
+        </div>
+      )}
+
+      {/* sports */}
+      {selectedId === "sports" && (
+        <div style={{ borderTop: "1px solid #2E2A42", paddingTop: "16px", marginBottom: "16px" }}>
+          <div style={{ color: "#22D3EE", fontSize: "13px", fontWeight: "bold", marginBottom: "12px" }}>
+            ⚽ {t("section_sports")}
+          </div>
+          <div style={{ marginBottom: "10px" }}>
+            <div style={{ color: "#9C97B8", fontSize: "12px", marginBottom: "5px" }}>{t("sport_type_label")}</div>
+            <select value={newSportType} onChange={(e) => setNewSportType(e.target.value)} style={selectStyle}>
+              <option value="">-- {language === "ar" ? "اختر" : language === "fr" ? "Choisir" : "Select"} --</option>
+              <option value="Football">{language === "ar" ? "كرة قدم" : language === "fr" ? "Football" : "Football"}</option>
+              <option value="Basketball">{language === "ar" ? "كرة سلة" : language === "fr" ? "Basketball" : "Basketball"}</option>
+              <option value="Tennis">{language === "ar" ? "تنس" : language === "fr" ? "Tennis" : "Tennis"}</option>
+              <option value="Swimming">{language === "ar" ? "سباحة" : language === "fr" ? "Natation" : "Swimming"}</option>
+              <option value="Volleyball">{language === "ar" ? "كرة طائرة" : language === "fr" ? "Volleyball" : "Volleyball"}</option>
+            </select>
+          </div>
+          <div style={{ marginBottom: "10px" }}>
+            <div style={{ color: "#9C97B8", fontSize: "12px", marginBottom: "5px" }}>{t("sport_team_label")}</div>
+            <input value={newSportTeam} onChange={(e) => setNewSportTeam(e.target.value)}
+              placeholder={language === "ar" ? "ريال مدريد..." : "Real Madrid..."} style={inputStyle} />
+          </div>
+          <div style={{ marginBottom: "10px" }}>
+            <div style={{ color: "#9C97B8", fontSize: "12px", marginBottom: "5px" }}>{t("sport_content_label")}</div>
+            <select value={newSportContent} onChange={(e) => setNewSportContent(e.target.value)} style={selectStyle}>
+              <option value="">-- {language === "ar" ? "اختر" : language === "fr" ? "Choisir" : "Select"} --</option>
+              <option value="News">{language === "ar" ? "أخبار" : language === "fr" ? "Actualités" : "News"}</option>
+              <option value="Analysis">{language === "ar" ? "تحليل مباريات" : language === "fr" ? "Analyse" : "Match Analysis"}</option>
+              <option value="Live">{language === "ar" ? "مباريات مباشرة" : language === "fr" ? "En direct" : "Live Matches"}</option>
+              <option value="Stats">{language === "ar" ? "إحصائيات" : language === "fr" ? "Statistiques" : "Statistics"}</option>
+            </select>
+          </div>
+        </div>
+      )}
+
+      {/* cars */}
+      {selectedId === "cars" && (
+        <div style={{ borderTop: "1px solid #2E2A42", paddingTop: "16px", marginBottom: "16px" }}>
+          <div style={{ color: "#F97316", fontSize: "13px", fontWeight: "bold", marginBottom: "12px" }}>
+            🚗 {t("section_cars")}
+          </div>
+          <div style={{ marginBottom: "10px" }}>
+            <div style={{ color: "#9C97B8", fontSize: "12px", marginBottom: "5px" }}>{t("car_type_label")}</div>
+            <select value={newCarType} onChange={(e) => setNewCarType(e.target.value)} style={selectStyle}>
+              <option value="">-- {language === "ar" ? "اختر" : language === "fr" ? "Choisir" : "Select"} --</option>
+              <option value="Sedan">{language === "ar" ? "سيدان" : language === "fr" ? "Berline" : "Sedan"}</option>
+              <option value="SUV">SUV</option>
+              <option value="Sports">{language === "ar" ? "رياضية" : language === "fr" ? "Sportive" : "Sports Car"}</option>
+              <option value="Classic">{language === "ar" ? "كلاسيكية" : language === "fr" ? "Classique" : "Classic"}</option>
+              <option value="Electric">{language === "ar" ? "كهربائية" : language === "fr" ? "Électrique" : "Electric"}</option>
+              <option value="Pickup">{language === "ar" ? "بيك أب" : language === "fr" ? "Pick-up" : "Pickup"}</option>
+            </select>
+          </div>
+          <div style={{ marginBottom: "10px" }}>
+            <div style={{ color: "#9C97B8", fontSize: "12px", marginBottom: "5px" }}>{t("car_brand_label")}</div>
+            <select value={newCarBrand} onChange={(e) => setNewCarBrand(e.target.value)} style={selectStyle}>
+              <option value="">-- {language === "ar" ? "اختر" : language === "fr" ? "Choisir" : "Select"} --</option>
+              <option value="Toyota">Toyota</option>
+              <option value="BMW">BMW</option>
+              <option value="Mercedes">Mercedes</option>
+              <option value="Ford">Ford</option>
+              <option value="Nissan">Nissan</option>
+              <option value="Ferrari">Ferrari</option>
+              <option value="Lamborghini">Lamborghini</option>
+            </select>
+          </div>
+          <div style={{ marginBottom: "10px" }}>
+            <div style={{ color: "#9C97B8", fontSize: "12px", marginBottom: "5px" }}>{t("car_content_label")}</div>
+            <select value={newCarContent} onChange={(e) => setNewCarContent(e.target.value)} style={selectStyle}>
+              <option value="">-- {language === "ar" ? "اختر" : language === "fr" ? "Choisir" : "Select"} --</option>
+              <option value="Tuning">{language === "ar" ? "تيونينق وتعديلات" : language === "fr" ? "Tuning & Modifs" : "Tuning & Mods"}</option>
+              <option value="Reviews">{language === "ar" ? "مراجعات" : language === "fr" ? "Critiques" : "Reviews"}</option>
+              <option value="Racing">{language === "ar" ? "سباقات" : language === "fr" ? "Courses" : "Racing"}</option>
+              <option value="Maintenance">{language === "ar" ? "صيانة" : language === "fr" ? "Entretien" : "Maintenance"}</option>
+              <option value="Prices">{language === "ar" ? "عروض وأسعار" : language === "fr" ? "Offres & Prix" : "Deals & Prices"}</option>
+            </select>
+          </div>
+        </div>
+      )}
+
+      {/* anime */}
+      {selectedId === "anime" && (
+        <div style={{ borderTop: "1px solid #2E2A42", paddingTop: "16px", marginBottom: "16px" }}>
+          <div style={{ color: "#EC4899", fontSize: "13px", fontWeight: "bold", marginBottom: "12px" }}>
+            🎌 {t("section_anime")}
+          </div>
+          <div style={{ marginBottom: "10px" }}>
+            <div style={{ color: "#9C97B8", fontSize: "12px", marginBottom: "5px" }}>{t("anime_genre_label")}</div>
+            <select value={newAnimeGenre} onChange={(e) => setNewAnimeGenre(e.target.value)} style={selectStyle}>
+              <option value="">-- {language === "ar" ? "اختر" : language === "fr" ? "Choisir" : "Select"} --</option>
+              <option value="Action">{language === "ar" ? "أكشن" : language === "fr" ? "Action" : "Action"}</option>
+              <option value="Romance">{language === "ar" ? "رومانسي" : language === "fr" ? "Romance" : "Romance"}</option>
+              <option value="Isekai">{language === "ar" ? "إيسيكاي" : "Isekai"}</option>
+              <option value="Horror">{language === "ar" ? "رعب" : language === "fr" ? "Horreur" : "Horror"}</option>
+              <option value="Comedy">{language === "ar" ? "كوميدي" : language === "fr" ? "Comédie" : "Comedy"}</option>
+              <option value="Adventure">{language === "ar" ? "مغامرات" : language === "fr" ? "Aventure" : "Adventure"}</option>
+              <option value="Sports">{language === "ar" ? "رياضي" : language === "fr" ? "Sport" : "Sports"}</option>
+              <option value="Drama">{language === "ar" ? "دراما" : language === "fr" ? "Drame" : "Drama"}</option>
+            </select>
+          </div>
+          <div style={{ marginBottom: "10px" }}>
+            <div style={{ color: "#9C97B8", fontSize: "12px", marginBottom: "5px" }}>{t("anime_source_label")}</div>
+            <select value={newAnimeSource} onChange={(e) => setNewAnimeSource(e.target.value)} style={selectStyle}>
+              <option value="">-- {language === "ar" ? "اختر" : language === "fr" ? "Choisir" : "Select"} --</option>
+              <option value="Manga">{language === "ar" ? "مانجا" : "Manga"}</option>
+              <option value="Light Novel">{language === "ar" ? "لايت نوفل" : "Light Novel"}</option>
+              <option value="Original">{language === "ar" ? "أصلي" : language === "fr" ? "Original" : "Original"}</option>
+              <option value="Game">{language === "ar" ? "لعبة" : language === "fr" ? "Jeu" : "Game"}</option>
+            </select>
+          </div>
+          <div style={{ marginBottom: "10px" }}>
+            <div style={{ color: "#9C97B8", fontSize: "12px", marginBottom: "5px" }}>{t("anime_status_label")}</div>
+            <select value={newAnimeStatus} onChange={(e) => setNewAnimeStatus(e.target.value)} style={selectStyle}>
+              <option value="">-- {language === "ar" ? "اختر" : language === "fr" ? "Choisir" : "Select"} --</option>
+              <option value="Airing">{language === "ar" ? "يُبث حالياً" : language === "fr" ? "En cours" : "Airing"}</option>
+              <option value="Finished">{language === "ar" ? "مكتمل" : language === "fr" ? "Terminé" : "Finished"}</option>
+              <option value="Upcoming">{language === "ar" ? "قادم" : language === "fr" ? "À venir" : "Upcoming"}</option>
+            </select>
+          </div>
+        </div>
+      )}
+
+      <button
+        onClick={createCommunity}
+        disabled={creatingCommunity || !newCommunityName.trim()}
+        style={{
+          width: "100%",
+          padding: "12px",
+          borderRadius: "10px",
+          border: "none",
+          background: "linear-gradient(135deg, #9B6BFF, #FF3D8A)",
+          color: "white",
+          cursor: "pointer",
+          fontSize: "15px",
+          fontWeight: "bold",
+          opacity: creatingCommunity || !newCommunityName.trim() ? 0.6 : 1
+        }}>
+        {creatingCommunity ? t("creating") : t("create_community")}
+          </button>
+        </div>
+      </div>
+      )}
+
+  {!selectedCommunity && !showCreateCommunity && (
+    <div>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
+        <div style={{ color: "white", fontWeight: "bold", fontSize: "20px" }}>
+          {t("communities_title")} — {selectedSection?.name}
+        </div>
+        {myProfile.is_premium ? (
+          <button onClick={() => setShowCreateCommunity(true)} style={{ display: "flex", alignItems: "center", gap: "6px", padding: "8px 16px", borderRadius: "10px", border: "none", background: "linear-gradient(135deg, #9B6BFF, #FF3D8A)", color: "white", cursor: "pointer", fontSize: "14px", fontWeight: "bold" }}>
+            <span style={{ fontSize: "18px" }}>+</span> {t("create_community")}
+          </button>
+        ) : (
+          <div style={{ color: "#9C97B8", fontSize: "12px", background: "#1A1826", padding: "8px 12px", borderRadius: "8px", border: "1px solid #2E2A42" }}>
+            {t("premium_required")}
+          </div>
+        )}
+      </div>
+      {communitiesForSection.length === 0 ? (
+        <div style={{ color: "#635E80", textAlign: "center", padding: "40px", background: "#1A1826", borderRadius: "12px" }}>
+          {t("no_communities")}
+        </div>
+      ) : (
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "16px" }}>
+          {communitiesForSection.map((community) => {
+            const status = myMembershipStatus(community.id);
+            const isOwner = user.id === community.owner_id;
+            return (
+              <div key={community.id} style={{ background: "#1A1826", borderRadius: "14px", overflow: "hidden", border: "1px solid #2E2A42", transition: "transform 0.2s" }}
+                onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
+                onMouseLeave={(e) => (e.currentTarget.style.transform = "translateY(0)")}>
+                <div style={{ height: "6px", background: community.color }} />
+                <div style={{ padding: "16px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "10px" }}>
+                    <div style={{ width: "44px", height: "44px", borderRadius: "10px", background: community.color, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "20px", fontWeight: "bold", color: "white", flexShrink: 0 }}>
+                      {community.name.charAt(0).toUpperCase()}
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ color: "white", fontWeight: "bold", fontSize: "15px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        {community.name}
+                      </div>
+                      <div style={{ color: "#9C97B8", fontSize: "11px" }}>
+                        {communityMembersCount(community.id)} {t("members_count")} • {t("owner_label")}: {usernameFor(community.owner_id)}
+                      </div>
+                    </div>
+                    {community.is_private && <span>🔒</span>}
+                  </div>
+                  {community.description && (
+                    <div style={{ color: "#9C97B8", fontSize: "13px", marginBottom: "10px", overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const }}>
+                      {community.description}
+                    </div>
+                  )}
+                  <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginBottom: "12px" }}>
+                    {community.game_name && <span style={{ background: "#221F32", color: "#9B6BFF", padding: "2px 8px", borderRadius: "20px", fontSize: "11px" }}>🎮 {community.game_name}</span>}
+                    {community.edit_type && <span style={{ background: "#221F32", color: "#FF3D8A", padding: "2px 8px", borderRadius: "20px", fontSize: "11px" }}>🎬 {community.edit_type}</span>}
+                    {community.movies_genre && <span style={{ background: "#221F32", color: "#FFC24B", padding: "2px 8px", borderRadius: "20px", fontSize: "11px" }}>🎥 {community.movies_genre}</span>}
+                    {community.sport_type && <span style={{ background: "#221F32", color: "#22D3EE", padding: "2px 8px", borderRadius: "20px", fontSize: "11px" }}>⚽ {community.sport_type}</span>}
+                    {community.car_brand && <span style={{ background: "#221F32", color: "#F97316", padding: "2px 8px", borderRadius: "20px", fontSize: "11px" }}>🚗 {community.car_brand}</span>}
+                    {community.anime_genre && <span style={{ background: "#221F32", color: "#EC4899", padding: "2px 8px", borderRadius: "20px", fontSize: "11px" }}>🎌 {community.anime_genre}</span>}
+                  </div>
+                  <div style={{ display: "flex", gap: "8px" }}>
+                    {(isOwner || status === "approved") && (
+                      <button onClick={() => setSelectedCommunity(community)} style={{ flex: 1, padding: "8px", borderRadius: "8px", border: "none", background: community.color, color: "white", cursor: "pointer", fontSize: "13px", fontWeight: "bold" }}>
+                        {t("enter_community")}
+                      </button>
+                    )}
+                    {!isOwner && !status && (
+                      <button onClick={() => joinCommunity(community.id)} style={{ flex: 1, padding: "8px", borderRadius: "8px", border: `1px solid ${community.color}`, background: "transparent", color: community.color, cursor: "pointer", fontSize: "13px" }}>
+                        {t("join_community")}
+                      </button>
+                    )}
+                    {!isOwner && status === "pending" && (
+                      <div style={{ flex: 1, padding: "8px", borderRadius: "8px", background: "#221F32", color: "#9C97B8", fontSize: "12px", textAlign: "center" }}>
+                        {t("pending_approval")}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+  </div>
+)}
+
+  </div>
+)}
+
+ {/* ===== بروفايل ===== */}
+ {(tab as string) === "profile" && (() => {
         const displayedId = viewingProfileId || user.id;
         const displayedProfile = viewingProfileId ? profiles.find((p) => p.id === viewingProfileId) : myProfile;
         const displayedUsername = displayedProfile?.username || "?";
@@ -1631,7 +2659,15 @@ export default function Home() {
                 </div>
               </div>
             )}
-
+<style>{`
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+`}</style>
             {activeDmUserId !== null && (
               <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
                 <div style={{ padding: "14px 16px", borderBottom: "1px solid #1E1B2E", background: "#0F0D1A", display: "flex", alignItems: "center", gap: "12px" }}>
@@ -1653,26 +2689,319 @@ export default function Home() {
                 </div>
                 <div style={{ flex: 1, overflowY: "auto", padding: "16px", display: "flex", flexDirection: "column", gap: "10px" }}>
                   {dmThreadWith(activeDmUserId).length === 0 && <div style={{ color: "#635E80", fontSize: "13px", textAlign: "center", marginTop: "40px" }}>{t("start_conversation")}</div>}
-                  {dmThreadWith(activeDmUserId).map((m) => {
-                    const isMine = m.sender_id === user.id;
-                    return (
-                      <div key={m.id} style={{ display: "flex", flexDirection: isMine ? "row-reverse" : "row", alignItems: "flex-end", gap: "8px" }}>
-                        {!isMine && <Avatar name={usernameFor(m.sender_id)} avatarUrl={avatarUrlFor(m.sender_id)} size={28} />}
-                        <div style={{ background: isMine ? "linear-gradient(135deg, #9B6BFF, #7B4FCC)" : "#1E1B2E", color: "white", padding: "10px 14px", borderRadius: isMine ? "18px 18px 4px 18px" : "18px 18px 18px 4px", fontSize: "14px", maxWidth: "75%", lineHeight: "1.4", boxShadow: isMine ? "0 2px 12px rgba(155,107,255,0.3)" : "none" }}>
-                          {m.text}
-                          <div style={{ fontSize: "10px", color: "rgba(255,255,255,0.5)", marginTop: "4px", textAlign: isMine ? "left" : "right" }}>{timeAgo(m.created_at)}</div>
-                        </div>
-                      </div>
-                    );
-                  })}
+                 {dmThreadWith(activeDmUserId).map((m) => {
+  const isMine = m.sender_id === user.id;
+
+  // دالة الروابط
+  const renderText = (text: string) => {
+    if (!text) return null;
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const parts = text.split(urlRegex);
+    return parts.map((part, i) =>
+      urlRegex.test(part) ? (
+        <a key={i} href={part} target="_blank" rel="noopener noreferrer"
+          style={{ color: "#C4B5FD", textDecoration: "underline", wordBreak: "break-all" }}>
+          {part}
+        </a>
+      ) : (
+        <span key={i}>{part}</span>
+      )
+    );
+  };
+
+  return (
+    <div key={m.id} style={{
+      display: "flex",
+      flexDirection: isMine ? "row-reverse" : "row",
+      alignItems: "flex-end",
+      gap: "8px"
+    }}>
+      {!isMine && (
+        <Avatar
+          name={usernameFor(m.sender_id)}
+          avatarUrl={avatarUrlFor(m.sender_id)}
+          size={28}
+        />
+      )}
+      <div style={{
+        background: isMine ? "linear-gradient(135deg, #9B6BFF, #7B4FCC)" : "#1E1B2E",
+        color: "white",
+        padding: "10px 14px",
+        borderRadius: isMine ? "18px 18px 4px 18px" : "18px 18px 18px 4px",
+        fontSize: "14px",
+        maxWidth: "75%",
+        lineHeight: "1.4",
+        boxShadow: isMine ? "0 2px 12px rgba(155,107,255,0.3)" : "none"
+      }}>
+
+        {/* ===== صورة ===== */}
+        {m.image_url && (
+          <img
+            src={m.image_url}
+            alt="img"
+            onClick={() => window.open(m.image_url!, "_blank")}
+            style={{
+              width: "100%",
+              maxWidth: "200px",
+              borderRadius: "10px",
+              display: "block",
+              marginBottom: m.text ? "8px" : "0",
+              cursor: "pointer"
+            }}
+          />
+        )}
+
+        {/* ===== فيديو ===== */}
+        {m.video_url && (
+          <video
+            src={m.video_url}
+            controls
+            style={{
+              width: "100%",
+              maxWidth: "200px",
+              borderRadius: "10px",
+              display: "block",
+              marginBottom: m.text ? "8px" : "0"
+            }}
+          />
+        )}
+
+        {/* ===== النص مع الروابط ===== */}
+        {m.text && (
+          <div style={{ wordBreak: "break-word" }}>
+            {renderText(m.text)}
+          </div>
+        )}
+
+        {/* ===== الوقت ===== */}
+        <div style={{
+          fontSize: "10px",
+          color: "rgba(255,255,255,0.5)",
+          marginTop: "4px",
+          textAlign: isMine ? "left" : "right"
+        }}>
+          {timeAgo(m.created_at)}
+        </div>
+      </div>
+    </div>
+  );
+})}
                   <div ref={dmMessagesEndRef} />
                 </div>
-                <div style={{ padding: "12px 14px", borderTop: "1px solid #1E1B2E", background: "#0F0D1A", display: "flex", gap: "10px", alignItems: "center" }}>
-                  <input value={newDmText} onChange={(e) => setNewDmText(e.target.value)} onKeyDown={(e) => e.key === "Enter" && sendDirectMessage()} placeholder={t("type_message_placeholder")} style={{ flex: 1, padding: "10px 14px", borderRadius: "24px", border: "1px solid #1E1B2E", background: "#1A1726", color: "white", fontSize: "14px", outline: "none" }} />
-                  <button onClick={sendDirectMessage} disabled={sendingDm || !newDmText.trim()} style={{ width: "42px", height: "42px", borderRadius: "50%", border: "none", background: newDmText.trim() ? "linear-gradient(135deg, #9B6BFF, #FF3D8A)" : "#1E1B2E", color: "white", cursor: newDmText.trim() ? "pointer" : "default", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "background 0.2s", opacity: sendingDm ? 0.6 : 1 }}>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" /></svg>
-                  </button>
-                </div>
+               <div style={{ padding: "12px 14px", borderTop: "1px solid #1E1B2E", background: "#0F0D1A" }}>
+  
+  {/* معاينة المرفقات */}
+  {(dmImage || dmVideo || dmLink) && (
+    <div style={{
+      display: "flex", gap: "8px", marginBottom: "10px",
+      flexWrap: "wrap", padding: "8px",
+      background: "#1A1726", borderRadius: "10px"
+    }}>
+      
+      {/* معاينة الصورة */}
+      {dmImage && (
+        <div style={{ position: "relative" }}>
+          <img
+            src={URL.createObjectURL(dmImage)}
+            style={{ width: "60px", height: "60px", borderRadius: "8px", objectFit: "cover" }}
+          />
+          <button onClick={() => setDmImage(null)} style={{
+            position: "absolute", top: "-6px", right: "-6px",
+            background: "#FF3D8A", border: "none", borderRadius: "50%",
+            width: "18px", height: "18px", color: "white",
+            cursor: "pointer", fontSize: "10px",
+            display: "flex", alignItems: "center", justifyContent: "center"
+          }}>✕</button>
+        </div>
+      )}
+
+      {/* معاينة الفيديو */}
+      {dmVideo && (
+        <div style={{
+          display: "flex", alignItems: "center", gap: "6px",
+          background: "#221F32", padding: "6px 10px", borderRadius: "8px"
+        }}>
+          <span style={{ fontSize: "20px" }}>🎬</span>
+          <span style={{
+            color: "#9C97B8", fontSize: "12px", maxWidth: "100px",
+            overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap"
+          }}>{dmVideo.name}</span>
+          <button onClick={() => setDmVideo(null)} style={{
+            background: "transparent", border: "none",
+            color: "#FF3D8A", cursor: "pointer", fontSize: "14px"
+          }}>✕</button>
+        </div>
+      )}
+
+      {/* معاينة الرابط */}
+      {dmLink && (
+        <div style={{
+          display: "flex", alignItems: "center", gap: "6px",
+          background: "#221F32", padding: "6px 10px", borderRadius: "8px", flex: 1
+        }}>
+          <span style={{ fontSize: "16px" }}>🔗</span>
+          <span style={{
+            color: "#9B6BFF", fontSize: "12px",
+            overflow: "hidden", textOverflow: "ellipsis",
+            whiteSpace: "nowrap", flex: 1
+          }}>{dmLink}</span>
+          <button onClick={() => setDmLink("")} style={{
+            background: "transparent", border: "none",
+            color: "#FF3D8A", cursor: "pointer", fontSize: "14px"
+          }}>✕</button>
+        </div>
+      )}
+    </div>
+  )}
+
+  {/* حقل الرابط */}
+  {showDmAttach && (
+    <div style={{ marginBottom: "10px" }}>
+      <input
+        value={dmLink}
+        onChange={(e) => setDmLink(e.target.value)}
+        placeholder="https://..."
+        style={{
+          width: "100%", padding: "8px 12px", borderRadius: "10px",
+          border: "1px solid #2E2A42", background: "#1A1726",
+          color: "white", fontSize: "13px", outline: "none",
+          boxSizing: "border-box" as const
+        }}
+      />
+    </div>
+  )}
+
+  {/* شريط الإرسال */}
+  <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+
+    {/* زر + للمرفقات */}
+    <div style={{ position: "relative" }}>
+      <button
+        onClick={() => setShowDmAttach(!showDmAttach)}
+        style={{
+          width: "38px", height: "38px", borderRadius: "50%", border: "none",
+          background: showDmAttach ? "#9B6BFF" : "#1E1B2E",
+          color: showDmAttach ? "white" : "#9C97B8",
+          cursor: "pointer", fontSize: "22px", fontWeight: "bold",
+          display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0
+        }}
+      >+</button>
+
+      {/* قائمة المرفقات */}
+      {showDmAttach && (
+        <div style={{
+          position: "absolute", bottom: "46px", left: "0",
+          background: "#1A1826", border: "1px solid #2E2A42",
+          borderRadius: "12px", padding: "8px",
+          display: "flex", flexDirection: "column", gap: "4px",
+          minWidth: "150px",
+          boxShadow: "0 8px 24px rgba(0,0,0,0.4)", zIndex: 10
+        }}>
+
+          {/* صورة */}
+          <label style={{
+            display: "flex", alignItems: "center", gap: "10px",
+            padding: "10px 12px", borderRadius: "8px",
+            cursor: "pointer", color: "white", fontSize: "13px"
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.background = "#221F32")}
+          onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+          >
+            <span style={{ fontSize: "20px" }}>🖼️</span>
+            <span>صورة</span>
+            <input type="file" accept="image/*" style={{ display: "none" }}
+              onChange={(e) => {
+                if (e.target.files?.[0]) {
+                  setDmImage(e.target.files[0]);
+                  setShowDmAttach(false);
+                }
+              }}
+            />
+          </label>
+
+          {/* فيديو */}
+          <label style={{
+            display: "flex", alignItems: "center", gap: "10px",
+            padding: "10px 12px", borderRadius: "8px",
+            cursor: "pointer", color: "white", fontSize: "13px"
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.background = "#221F32")}
+          onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+          >
+            <span style={{ fontSize: "20px" }}>🎬</span>
+            <span>فيديو</span>
+            <input type="file" accept="video/*" style={{ display: "none" }}
+              onChange={(e) => {
+                if (e.target.files?.[0]) {
+                  setDmVideo(e.target.files[0]);
+                  setShowDmAttach(false);
+                }
+              }}
+            />
+          </label>
+
+          {/* رابط */}
+          <div style={{
+            display: "flex", alignItems: "center", gap: "10px",
+            padding: "10px 12px", borderRadius: "8px",
+            cursor: "pointer", color: "white", fontSize: "13px"
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.background = "#221F32")}
+          onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+          onClick={() => setShowDmAttach(false)}
+          >
+            <span style={{ fontSize: "20px" }}>🔗</span>
+            <span>رابط</span>
+          </div>
+
+        </div>
+      )}
+    </div>
+
+    {/* حقل الكتابة */}
+    <input
+      value={newDmText}
+      onChange={(e) => setNewDmText(e.target.value)}
+      onKeyDown={(e) => e.key === "Enter" && sendDirectMessage()}
+      placeholder={t("type_message_placeholder")}
+      style={{
+        flex: 1, padding: "10px 14px", borderRadius: "24px",
+        border: "1px solid #1E1B2E", background: "#1A1726",
+        color: "white", fontSize: "14px", outline: "none"
+      }}
+    />
+
+    {/* زر الإرسال */}
+    <button
+      onClick={sendDirectMessage}
+      disabled={sendingDm || (!newDmText.trim() && !dmImage && !dmVideo && !dmLink.trim())}
+      style={{
+        width: "42px", height: "42px", borderRadius: "50%", border: "none",
+        background: (newDmText.trim() || dmImage || dmVideo || dmLink.trim())
+          ? "linear-gradient(135deg, #9B6BFF, #FF3D8A)" : "#1E1B2E",
+        color: "white",
+        cursor: (newDmText.trim() || dmImage || dmVideo || dmLink.trim()) ? "pointer" : "default",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        flexShrink: 0, transition: "background 0.2s", opacity: sendingDm ? 0.6 : 1
+      }}
+    >
+      {uploadingDmFile ? (
+        <div style={{
+          width: "16px", height: "16px",
+          border: "2px solid white", borderTopColor: "transparent",
+          borderRadius: "50%", animation: "spin 0.8s linear infinite"
+        }} />
+      ) : (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+          stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13" />
+          <polygon points="22 2 15 22 11 13 2 9 22 2" />
+        </svg>
+      )}
+    </button>
+
+  </div>
+</div>
               </div>
             )}
           </>
