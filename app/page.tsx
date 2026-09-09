@@ -1,11 +1,12 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
+import { motion } from "framer-motion";
 import { supabase } from "./supabase";
 import type { User } from "@supabase/supabase-js";
 
 type Post = { id: number; section_id: string; title: string; body: string; video_url: string | null; user_id: string | null; is_premium: boolean };
 type Message = { id: number; section_id: string; text: string; video_url: string | null; user_id: string | null };
-type Video = { id: number; section_id: string; title: string; url: string; user_id: string | null };
+type Video = { id: number; section_id: string; title: string; url: string; user_id: string | null; thumbnail_url: string | null; description: string | null };
 type Profile = { id: string; username: string; bio: string | null; avatar_url: string | null; is_premium: boolean; language: string | null };
 type PostLike = { id: number; post_id: number; user_id: string };
 type VideoLike = { id: number; video_id: number; user_id: string };
@@ -289,6 +290,7 @@ publishing_announcement: "جاري النشر...",
 founder_only_note: "أنت المؤسس فقط تقدر تنشر",
 delete_btn: "حذف",
 post_video_url: "رابط الفيديو",
+dashboard_title: "لوحة التحكم",
 days_ago: "ي",
   },
   en: {
@@ -482,6 +484,7 @@ publishing_announcement: "Publishing...",
 founder_only_note: "Only the founder can post announcements",
 delete_btn: "Delete",
 post_video_url: "Video URL",
+dashboard_title: "Control Panel",
     days_ago: "d",
 
   },
@@ -675,6 +678,7 @@ publishing_announcement: "Publication...",
 founder_only_note: "Seul le fondateur peut publier",
 delete_btn: "Supprimer",
 post_video_url: "URL de la vidéo",
+dashboard_title: "Panneau de contrôle",
     days_ago: "j",
   },
 } as const;
@@ -734,7 +738,470 @@ function ToastNotification({ notif, onClose, dir }: {
     </div>
   );
 }
+// ===== 3D Main Sections Carousel =====
 
+type CarouselSection = {
+  id: string;
+  name: string;
+  color: string;
+  icon: string;
+  media: {
+    type: "video" | "image";
+    src: string;
+  };
+};
+
+function MainSectionsCarousel({
+  sections,
+  selectedId,
+  onSelect,
+  dir,
+}: {
+  sections: CarouselSection[];
+  selectedId: string;
+  onSelect: (id: string) => void;
+  dir: "rtl" | "ltr";
+}) {
+  const [activeIndex, setActiveIndex] = useState(
+    Math.max(
+      0,
+      sections.findIndex((section) => section.id === selectedId)
+    )
+  );
+
+  useEffect(() => {
+    const index = sections.findIndex(
+      (section) => section.id === selectedId
+    );
+
+    if (index >= 0) {
+      setActiveIndex(index);
+    }
+  }, [selectedId, sections]);
+
+  const total = sections.length;
+
+  function goTo(index: number) {
+    const nextIndex = (index + total) % total;
+    setActiveIndex(nextIndex);
+    onSelect(sections[nextIndex].id);
+  }
+
+  function next() {
+    goTo(activeIndex + 1);
+  }
+
+  function previous() {
+    goTo(activeIndex - 1);
+  }
+
+  function getRelativePosition(index: number) {
+    let diff = index - activeIndex;
+
+    if (diff > total / 2) diff -= total;
+    if (diff < -total / 2) diff += total;
+
+    return diff;
+  }
+
+  return (
+    <section
+      dir={dir}
+      style={{
+        width: "100%",
+        marginBottom: "30px",
+        position: "relative",
+      }}
+    >
+      {/* العنوان */}
+      <div
+        style={{
+          marginBottom: "18px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
+        <h1
+          style={{
+            color: "white",
+            fontSize: "28px",
+            fontWeight: 800,
+            margin: 0,
+          }}
+        >
+          الأقسام الرئيسية
+        </h1>
+
+        {/* الأسهم */}
+        <div
+          style={{
+            display: "flex",
+            gap: "8px",
+          }}
+        >
+          <button
+            onClick={previous}
+            aria-label="Previous section"
+            style={{
+              width: "42px",
+              height: "42px",
+              borderRadius: "50%",
+              border: "1px solid #302A48",
+              background: "#171421",
+              color: "white",
+              fontSize: "20px",
+              cursor: "pointer",
+              boxShadow: "0 0 20px rgba(155,107,255,0.12)",
+            }}
+          >
+            {dir === "rtl" ? "→" : "←"}
+          </button>
+
+          <button
+            onClick={next}
+            aria-label="Next section"
+            style={{
+              width: "42px",
+              height: "42px",
+              borderRadius: "50%",
+              border: "1px solid #302A48",
+              background: "#171421",
+              color: "white",
+              fontSize: "20px",
+              cursor: "pointer",
+              boxShadow: "0 0 20px rgba(155,107,255,0.12)",
+            }}
+          >
+            {dir === "rtl" ? "←" : "→"}
+          </button>
+        </div>
+      </div>
+
+      {/* Carousel */}
+      <div
+        style={{
+          position: "relative",
+          width: "100%",
+          height: "390px",
+          overflow: "hidden",
+          perspective: "1400px",
+          touchAction: "pan-y",
+          userSelect: "none",
+        }}
+      >
+        {/* إضاءة خلفية */}
+        <div
+          style={{
+            position: "absolute",
+            left: "50%",
+            top: "50%",
+            width: "320px",
+            height: "260px",
+            transform: "translate(-50%, -50%)",
+            background:
+              "radial-gradient(circle, rgba(155,107,255,0.18), transparent 70%)",
+            filter: "blur(35px)",
+            pointerEvents: "none",
+          }}
+        />
+
+        {sections.map((section, index) => {
+          const position = getRelativePosition(index);
+
+          // لا نعرض البطاقات البعيدة جدًا
+          if (Math.abs(position) > 2) return null;
+
+          const isActive = position === 0;
+
+          let x = position * 285;
+          let rotateY = position * -30;
+          let scale = 0.82;
+          let opacity = 0.48;
+          let zIndex = 10 - Math.abs(position);
+
+          if (isActive) {
+            x = 0;
+            rotateY = 0;
+            scale = 1;
+            opacity = 1;
+            zIndex = 30;
+          } else if (Math.abs(position) === 1) {
+            x = position * 275;
+            rotateY = position * -28;
+            scale = 0.88;
+            opacity = 0.72;
+          } else {
+            x = position * 430;
+            rotateY = position * -38;
+            scale = 0.70;
+            opacity = 0.30;
+          }
+
+          return (
+            <motion.div
+              key={section.id}
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.18}
+              onDragEnd={(_, info) => {
+                if (info.offset.x > 60) {
+                  previous();
+                } else if (info.offset.x < -60) {
+                  next();
+                }
+              }}
+              onClick={() => goTo(index)}
+              initial={false}
+              animate={{
+                x,
+                rotateY,
+                scale,
+                opacity,
+              }}
+              transition={{
+                type: "spring",
+                stiffness: 260,
+                damping: 26,
+                mass: 0.8,
+              }}
+              style={{
+                position: "absolute",
+                left: "50%",
+                top: "50%",
+                width: "260px",
+                height: "350px",
+                marginLeft: "-130px",
+                marginTop: "-175px",
+                zIndex,
+                transformStyle: "preserve-3d",
+                cursor: "pointer",
+                transformOrigin: "center center",
+              }}
+            >
+              <div
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  position: "relative",
+                  overflow: "hidden",
+                  borderRadius: "24px",
+                  border: isActive
+                    ? `2px solid ${section.color}`
+                    : "1px solid rgba(255,255,255,0.16)",
+                  background: "#14111E",
+                  boxShadow: isActive
+                    ? `
+                      0 0 18px ${section.color},
+                      0 0 45px ${section.color}88,
+                      0 20px 60px rgba(0,0,0,0.55)
+                    `
+                    : "0 15px 40px rgba(0,0,0,0.5)",
+                }}
+              >
+                {/* ===== Background Media ===== */}
+
+                {section.media.type === "video" ? (
+                  <video
+                    src={section.media.src}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload="metadata"
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      pointerEvents: "none",
+                    }}
+                  />
+                ) : (
+                  <img
+                    src={section.media.src}
+                    alt={section.name}
+                    draggable={false}
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      pointerEvents: "none",
+                    }}
+                  />
+                )}
+
+                {/* ===== Dark Overlay ===== */}
+
+                <div
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    background: `
+                      linear-gradient(
+                        to bottom,
+                        rgba(0,0,0,0.08) 0%,
+                        rgba(0,0,0,0.18) 35%,
+                        rgba(0,0,0,0.72) 72%,
+                        rgba(0,0,0,0.94) 100%
+                      )
+                    `,
+                  }}
+                />
+
+                {/* ===== Color Glow ===== */}
+
+                <div
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    background: `
+                      radial-gradient(
+                        circle at 50% 45%,
+                        ${section.color}22,
+                        transparent 58%
+                      )
+                    `,
+                    pointerEvents: "none",
+                  }}
+                />
+
+                {/* ===== Active Indicator ===== */}
+
+                {isActive && (
+                  <motion.div
+                    animate={{
+                      opacity: [0.35, 0.75, 0.35],
+                      scale: [0.98, 1.02, 0.98],
+                    }}
+                    transition={{
+                      duration: 2.4,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
+                    style={{
+                      position: "absolute",
+                      inset: "-3px",
+                      borderRadius: "26px",
+                      border: `2px solid ${section.color}`,
+                      boxShadow: `0 0 30px ${section.color}`,
+                      pointerEvents: "none",
+                    }}
+                  />
+                )}
+
+                {/* ===== Icon ===== */}
+
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "20px",
+                    right: "20px",
+                    width: "48px",
+                    height: "48px",
+                    borderRadius: "15px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "25px",
+                    background: "rgba(0,0,0,0.42)",
+                    border: `1px solid ${section.color}66`,
+                    backdropFilter: "blur(8px)",
+                    boxShadow: isActive
+                      ? `0 0 18px ${section.color}88`
+                      : "none",
+                  }}
+                >
+                  {section.icon}
+                </div>
+
+                {/* ===== Text ===== */}
+
+                <div
+                  style={{
+                    position: "absolute",
+                    left: "20px",
+                    right: "20px",
+                    bottom: "22px",
+                    textAlign: "center",
+                  }}
+                >
+                  <div
+                    style={{
+                      fontSize: isActive ? "27px" : "23px",
+                      fontWeight: 900,
+                      color: "white",
+                      textShadow: isActive
+                        ? `0 0 15px ${section.color}, 0 3px 10px rgba(0,0,0,0.8)`
+                        : "0 3px 10px rgba(0,0,0,0.8)",
+                      transition: "font-size 0.3s ease",
+                    }}
+                  >
+                    {section.name}
+                  </div>
+
+                  {isActive && (
+                    <div
+                      style={{
+                        width: "45px",
+                        height: "3px",
+                        margin: "10px auto 0",
+                        borderRadius: "10px",
+                        background: section.color,
+                        boxShadow: `0 0 12px ${section.color}`,
+                      }}
+                    />
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
+
+      {/* Dots */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          gap: "7px",
+          marginTop: "2px",
+        }}
+      >
+        {sections.map((section, index) => {
+          const active = index === activeIndex;
+
+          return (
+            <button
+              key={section.id}
+              onClick={() => goTo(index)}
+              aria-label={section.name}
+              style={{
+                width: active ? "28px" : "7px",
+                height: "7px",
+                padding: 0,
+                border: "none",
+                borderRadius: "20px",
+                background: active
+                  ? section.color
+                  : "#3A354B",
+                boxShadow: active
+                  ? `0 0 12px ${section.color}`
+                  : "none",
+                cursor: "pointer",
+                transition: "all 0.3s ease",
+              }}
+            />
+          );
+        })}
+      </div>
+    </section>
+  );
+}
 // ===== Main Component =====
 export default function Home() {
   const [language, setLanguage] = useState<Lang>("ar");
@@ -744,12 +1211,107 @@ export default function Home() {
     return translations[language][key] || translations.ar[key] || key;
   }
 const sections = [
-  { id: "gaming", name: t("section_gaming"), color: "#9B6BFF", subsections: [{ id: "gaming-general", name: t("subsection_general") }] },
-  { id: "editing", name: t("section_editing"), color: "#FF3D8A", subsections: [{ id: "editing-general", name: t("subsection_general") }] },
-  { id: "movies", name: t("section_movies"), color: "#FFC24B", subsections: [{ id: "movies-general", name: t("subsection_general") }] },
-  { id: "sports", name: t("section_sports"), color: "#22D3EE", subsections: [{ id: "sports-general", name: t("subsection_general") }] },
-  { id: "cars", name: t("section_cars"), color: "#F97316", subsections: [{ id: "cars-general", name: t("subsection_general") }] },
-  { id: "anime", name: t("section_anime"), color: "#EC4899", subsections: [{ id: "anime-general", name: t("subsection_general") }] },
+  {
+    id: "gaming",
+    name: t("section_gaming"),
+    color: "#9B6BFF",
+    icon: "🎮",
+    media: {
+      type: "video" as const,
+      src: "/sections/gaming.mp4",
+    },
+    subsections: [
+      {
+        id: "gaming-general",
+        name: t("subsection_general"),
+      },
+    ],
+  },
+
+  {
+    id: "editing",
+    name: t("section_editing"),
+    color: "#FF3D8A",
+    icon: "🎬",
+    media: {
+      type: "video" as const,
+      src: "/sections/editing.mp4",
+    },
+    subsections: [
+      {
+        id: "editing-general",
+        name: t("subsection_general"),
+      },
+    ],
+  },
+
+  {
+    id: "movies",
+    name: t("section_movies"),
+    color: "#FFC24B",
+    icon: "🎥",
+    media: {
+      type: "video" as const,
+      src: "/sections/movies.mp4",
+    },
+    subsections: [
+      {
+        id: "movies-general",
+        name: t("subsection_general"),
+      },
+    ],
+  },
+
+  {
+    id: "sports",
+    name: t("section_sports"),
+    color: "#22D3EE",
+    icon: "⚽",
+    media: {
+      type: "video" as const,
+      src: "/sections/sports.mp4",
+    },
+    subsections: [
+      {
+        id: "sports-general",
+        name: t("subsection_general"),
+      },
+    ],
+  },
+
+  {
+    id: "cars",
+    name: t("section_cars"),
+    color: "#F97316",
+    icon: "🚗",
+    media: {
+      type: "video" as const,
+      src: "/sections/cars.mp4",
+    },
+    subsections: [
+      {
+        id: "cars-general",
+        name: t("subsection_general"),
+      },
+    ],
+  },
+
+  {
+    id: "anime",
+    name: t("section_anime"),
+    color: "#EC4899",
+    icon: "🎌",
+    media: {
+      type: "video" as const,
+      src: "/sections/anime.mp4",
+    },
+    subsections: [
+      {
+        id: "anime-general",
+        name: t("subsection_general"),
+      },
+    ],
+  },
 ];
 
   const [user, setUser] = useState<User | null>(null);
@@ -762,6 +1324,13 @@ const sections = [
   const [messages, setMessages] = useState<Message[]>([]); const [newMessage, setNewMessage] = useState(""); const [newMessageVideo, setNewMessageVideo] = useState<File | null>(null); const [sendingMessage, setSendingMessage] = useState(false);
   const [posts, setPosts] = useState<Post[]>([]); const [newPostTitle, setNewPostTitle] = useState(""); const [newPostBody, setNewPostBody] = useState(""); const [newPostVideo, setNewPostVideo] = useState<File | null>(null); const [newPostIsPremium, setNewPostIsPremium] = useState(false); const [publishingPost, setPublishingPost] = useState(false);
   const [videos, setVideos] = useState<Video[]>([]); const [newVideoTitle, setNewVideoTitle] = useState(""); const [videoFile, setVideoFile] = useState<File | null>(null); const [uploading, setUploading] = useState(false);
+  const [showUploadVideoModal, setShowUploadVideoModal] = useState(false);
+const [videoDescription, setVideoDescription] = useState("");
+const [videoTags, setVideoTags] = useState("");
+const [videoThumbnail, setVideoThumbnail] = useState<File | null>(null);
+const [videoPrivacy, setVideoPrivacy] = useState<"public" | "private" | "unlisted">("public");
+const [videoCategory, setVideoCategory] = useState("");
+const [watchingVideo, setWatchingVideo] = useState<Video | null>(null);
   const [postLikes, setPostLikes] = useState<PostLike[]>([]); const [videoLikes, setVideoLikes] = useState<VideoLike[]>([]);
   const [postComments, setPostComments] = useState<PostComment[]>([]); const [videoComments, setVideoComments] = useState<VideoComment[]>([]);
   const [newPostCommentText, setNewPostCommentText] = useState<Record<number, string>>({}); const [newVideoCommentText, setNewVideoCommentText] = useState<Record<number, string>>({});
@@ -786,6 +1355,8 @@ const [dmVideo, setDmVideo] = useState<File | null>(null);
 const [dmLink, setDmLink] = useState("");
 const [showDmAttach, setShowDmAttach] = useState(false);
 const [uploadingDmFile, setUploadingDmFile] = useState(false);
+const [dashboardPanelOpen, setDashboardPanelOpen] = useState(false);
+const [activeDashboardItem, setActiveDashboardItem] = useState<string | null>(null);
 // ===== states المجتمع الداخلي =====
 const [communityTab, setCommunityTab] = useState<"chat" | "posts" | "videos" | "members" | "announcements">("chat");
 const [communityMessages, setCommunityMessages] = useState<CommunityMessage[]>([]);
@@ -811,6 +1382,10 @@ const [newAnnouncementBody, setNewAnnouncementBody] = useState("");
 const [publishingAnnouncement, setPublishingAnnouncement] = useState(false);
 const communityMessagesEndRef = useRef<HTMLDivElement>(null);
   const selectedSection = sections.find((s) => s.id === selectedId);
+  const dashboardItems = [
+  { id: "example", icon: "⭐", label: language === "ar" ? "قسم تجريبي" : language === "fr" ? "Section test" : "Example Section" },
+  // زيد هنا أي قسم جديد: { id: "...", icon: "...", label: "..." },
+];
   const unreadDmCount = user ? directMessages.filter((m) => m.recipient_id === user.id).length : 0;
   const unreadNotifCount = notifications.filter((n) => !n.is_read).length;
 const [newCarType, setNewCarType] = useState("");
@@ -1224,12 +1799,28 @@ useEffect(() => {
     setSelectedCommunity(null); setShowCreateCommunity(false); setShowManageRequests(false);
   }
 
-  async function uploadVideoFile(file: File): Promise<string | null> {
-    const fn = `${Date.now()}-${file.name}`;
-    const { error } = await supabase.storage.from("videos").upload(fn, file);
-    if (error) return null;
-    return supabase.storage.from("videos").getPublicUrl(fn).data.publicUrl;
+ async function uploadVideoFile(file: File): Promise<string | null> {
+  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+  const fn = `dm-videos/${Date.now()}-${safeName}`;
+
+  const { error } = await supabase.storage
+    .from("videos")
+    .upload(fn, file, {
+      cacheControl: "3600",
+      upsert: false,
+      contentType: file.type || "video/mp4",
+    });
+
+  if (error) {
+    console.error("Video upload error:", error);
+    return null;
   }
+
+  return supabase.storage
+    .from("videos")
+    .getPublicUrl(fn)
+    .data.publicUrl;
+}
 
   async function sendMessage() {
     if (!user || (!newMessage.trim() && !newMessageVideo)) return;
@@ -1253,7 +1844,17 @@ useEffect(() => {
   async function uploadVideo() {
     if (!user || !videoFile || !newVideoTitle.trim()) return;
     setUploading(true);
+    if (!user || !videoFile || !newVideoTitle.trim()) return;
+    setUploading(true);
     const url = await uploadVideoFile(videoFile);
+    let thumbnail_url: string | null = null;
+    if (videoThumbnail) {
+      const fn = `thumb-${Date.now()}-${videoThumbnail.name}`;
+      const { error } = await supabase.storage.from("videos").upload(fn, videoThumbnail);
+      if (!error) thumbnail_url = supabase.storage.from("videos").getPublicUrl(fn).data.publicUrl;
+    }
+    if (url) await supabase.from("videos").insert({ section_id: selectedSubId, title: newVideoTitle, url, user_id: user.id, thumbnail_url, description: videoDescription.trim() || null });
+    setNewVideoTitle(""); setVideoFile(null); setVideoThumbnail(null); setVideoDescription(""); setUploading(false); fetchVideos();
     if (url) await supabase.from("videos").insert({ section_id: selectedSubId, title: newVideoTitle, url, user_id: user.id });
     setNewVideoTitle(""); setVideoFile(null); setUploading(false); fetchVideos();
   }
@@ -1494,8 +2095,330 @@ useEffect(() => {
   );
 
   return (
-    <main style={{ background: "#100F17", minHeight: "100vh", padding: "40px", direction: dir }}>
+   <main style={{ background: "#100F17", minHeight: "100vh", padding: "40px", ...(dir === "rtl" ? { paddingRight: "116px" } : { paddingLeft: "116px" }), direction: dir }}>
+{/* ===== الشريط الجانبي ===== */}
+<div
+  onMouseEnter={(e) => {
+    (e.currentTarget as HTMLDivElement).style.width = "200px";
+  }}
+  onMouseLeave={(e) => {
+    (e.currentTarget as HTMLDivElement).style.width = "59px";
+  }}
+  style={{
+    position: "fixed", top: 0, bottom: 0,
+    ...(dir === "rtl" ? { right: 0 } : { left: 0 }),
+    width: "76px",
+    background: "#0A0910",
+    borderLeft: dir === "rtl" ? "1px solid #1E1B2E" : "none",
+    borderRight: dir === "rtl" ? "none" : "1px solid #1E1B2E",
+    display: "flex", flexDirection: "column", alignItems: "flex-start",
+    padding: "24px 0", zIndex: 1500, gap: "4px",
+    overflow: "hidden",
+    transition: "width 0.3s cubic-bezier(0.4,0,0.2,1)",
+    boxShadow: "2px 0 20px rgba(0,0,0,0.4)",
+  }}>
 
+  {/* ===== الأفاتار + اسم المستخدم ===== */}
+  <div style={{
+    display: "flex", alignItems: "center", gap: "12px",
+    padding: "0 16px", marginBottom: "20px", width: "100%",
+    minWidth: "200px",
+  }}>
+    <div style={{ position: "relative", flexShrink: 0 }}>
+      <Avatar
+        name={myProfile.username}
+        avatarUrl={myProfile.avatar_url}
+        size={40}
+        onClick={() => viewProfile(user.id)}
+      />
+      {myProfile.is_premium && (
+        <span style={{
+          position: "absolute", bottom: -2, right: -2, fontSize: "12px"
+        }}>💎</span>
+      )}
+    </div>
+    <div style={{ overflow: "hidden", whiteSpace: "nowrap" }}>
+      <div style={{
+        color: "white", fontWeight: "bold", fontSize: "14px",
+        overflow: "hidden", textOverflow: "ellipsis",
+      }}>
+        {myProfile.username}
+      </div>
+      {myProfile.is_premium && (
+        <div style={{ color: "#9B6BFF", fontSize: "11px" }}>Premium 💎</div>
+      )}
+    </div>
+  </div>
+
+  {/* ===== فاصل ===== */}
+  <div style={{
+    width: "100%", height: "1px",
+    background: "#1E1B2E", marginBottom: "8px",
+  }} />
+
+  {/* ===== زر الرئيسية ===== */}
+  <div
+    onClick={() => {
+      setTab("chat");
+      setDmPanelOpen(false);
+      setDashboardPanelOpen(false);
+      setShowNotifications(false);
+      setViewingProfileId(null);
+    }}
+    style={{
+      display: "flex", alignItems: "center", gap: "14px",
+      padding: "10px 16px", width: "100%", minWidth: "200px",
+      cursor: "pointer", borderRadius: "0 12px 12px 0",
+      background: tab === "chat" ? "rgba(155,107,255,0.15)" : "transparent",
+      borderLeft: tab === "chat" ? "3px solid #9B6BFF" : "3px solid transparent",
+      transition: "background 0.2s",
+    }}
+    onMouseEnter={(e) => {
+      if (tab !== "chat")
+        (e.currentTarget as HTMLDivElement).style.background = "rgba(255,255,255,0.05)";
+    }}
+    onMouseLeave={(e) => {
+      if (tab !== "chat")
+        (e.currentTarget as HTMLDivElement).style.background = "transparent";
+    }}
+  >
+    <span style={{ fontSize: "22px", flexShrink: 0, width: "28px", textAlign: "center" }}>🏠</span>
+    <span style={{
+      color: tab === "chat" ? "white" : "#9C97B8",
+      fontSize: "14px", whiteSpace: "nowrap", fontWeight: tab === "chat" ? "bold" : "normal",
+    }}>
+      {language === "ar" ? "الرئيسية" : language === "fr" ? "Accueil" : "Home"}
+    </span>
+  </div>
+
+  {/* ===== زر الرسائل ===== */}
+  <div
+    onClick={() => setDmPanelOpen(true)}
+    style={{
+      display: "flex", alignItems: "center", gap: "14px",
+      padding: "10px 16px", width: "100%", minWidth: "200px",
+      cursor: "pointer", borderRadius: "0 12px 12px 0",
+      background: "transparent",
+      borderLeft: "3px solid transparent",
+      transition: "background 0.2s",
+      position: "relative",
+    }}
+    onMouseEnter={(e) =>
+      ((e.currentTarget as HTMLDivElement).style.background = "rgba(255,255,255,0.05)")
+    }
+    onMouseLeave={(e) =>
+      ((e.currentTarget as HTMLDivElement).style.background = "transparent")
+    }
+  >
+    <div style={{ position: "relative", flexShrink: 0, width: "28px", textAlign: "center" }}>
+      <span style={{ fontSize: "22px" }}>✉️</span>
+      {unreadDmCount > 0 && (
+        <div style={{
+          position: "absolute", top: "-4px", right: "-4px",
+          width: "16px", height: "16px", borderRadius: "50%",
+          background: "#FF3D8A", color: "white", fontSize: "9px",
+          fontWeight: "bold", display: "flex", alignItems: "center",
+          justifyContent: "center", border: "2px solid #0A0910",
+        }}>
+          {unreadDmCount > 9 ? "9+" : unreadDmCount}
+        </div>
+      )}
+    </div>
+    <span style={{ color: "#9C97B8", fontSize: "14px", whiteSpace: "nowrap" }}>
+      {t("private_messages_title")}
+    </span>
+  </div>
+
+  {/* ===== زر الإشعارات ===== */}
+  <div
+    ref={notifPanelRef}
+    style={{ position: "relative", width: "100%" }}
+  >
+    <div
+      onClick={() => {
+        setShowNotifications(!showNotifications);
+        if (!showNotifications) markAllRead();
+      }}
+      style={{
+        display: "flex", alignItems: "center", gap: "14px",
+        padding: "10px 16px", width: "100%", minWidth: "200px",
+        cursor: "pointer", borderRadius: "0 12px 12px 0",
+        background: showNotifications ? "rgba(155,107,255,0.15)" : "transparent",
+        borderLeft: showNotifications ? "3px solid #9B6BFF" : "3px solid transparent",
+        transition: "background 0.2s",
+        boxSizing: "border-box" as const,
+      }}
+      onMouseEnter={(e) => {
+        if (!showNotifications)
+          (e.currentTarget as HTMLDivElement).style.background = "rgba(255,255,255,0.05)";
+      }}
+      onMouseLeave={(e) => {
+        if (!showNotifications)
+          (e.currentTarget as HTMLDivElement).style.background = "transparent";
+      }}
+    >
+      <div style={{ position: "relative", flexShrink: 0, width: "28px", textAlign: "center" }}>
+        <span style={{ fontSize: "22px" }}>🔔</span>
+        {unreadNotifCount > 0 && (
+          <div style={{
+            position: "absolute", top: "-4px", right: "-4px",
+            width: "16px", height: "16px", borderRadius: "50%",
+            background: "#FF3D8A", color: "white", fontSize: "9px",
+            fontWeight: "bold", display: "flex", alignItems: "center",
+            justifyContent: "center", border: "2px solid #0A0910",
+          }}>
+            {unreadNotifCount > 9 ? "9+" : unreadNotifCount}
+          </div>
+        )}
+      </div>
+      <span style={{ color: "#9C97B8", fontSize: "14px", whiteSpace: "nowrap" }}>
+        {t("notifications_title")}
+      </span>
+    </div>
+
+    {/* ===== بانل الإشعارات ===== */}
+    {showNotifications && (
+      <div style={{
+        position: "absolute", top: "0",
+        ...(dir === "rtl" ? { right: "76px", left: "auto" } : { left: "76px", right: "auto" }),
+        width: "340px", background: "#13111E",
+        border: "1px solid #1E1B2E", borderRadius: "16px",
+        boxShadow: "0 8px 40px rgba(0,0,0,0.6)",
+        zIndex: 2000, overflow: "hidden", direction: dir,
+      }}>
+        <div style={{
+          padding: "16px", borderBottom: "1px solid #1E1B2E",
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+        }}>
+          <span style={{ color: "white", fontWeight: "bold", fontSize: "16px" }}>
+            {t("notifications_title")}
+          </span>
+          {unreadNotifCount > 0 && (
+            <button onClick={markAllRead} style={{
+              background: "transparent", border: "none",
+              color: "#9B6BFF", cursor: "pointer", fontSize: "12px",
+            }}>
+              {t("mark_all_read")}
+            </button>
+          )}
+        </div>
+        <div style={{ maxHeight: "400px", overflowY: "auto" }}>
+          {notifications.length === 0 ? (
+            <div style={{
+              color: "#635E80", textAlign: "center",
+              padding: "40px 20px", fontSize: "13px",
+            }}>
+              {t("no_notifications")}
+            </div>
+          ) : (
+            notifications.map((notif) => (
+              <div
+                key={notif.id}
+                onClick={() => markOneRead(notif.id)}
+                style={{
+                  padding: "12px 16px", display: "flex",
+                  alignItems: "flex-start", gap: "10px",
+                  borderBottom: "1px solid #1A1726",
+                  background: notif.is_read ? "transparent" : "rgba(155,107,255,0.06)",
+                  cursor: "pointer",
+                }}
+              >
+                <div style={{ position: "relative", flexShrink: 0 }}>
+                  <Avatar
+                    name={usernameFor(notif.from_user_id)}
+                    avatarUrl={avatarUrlFor(notif.from_user_id)}
+                    size={38}
+                    onClick={() => viewProfile(notif.from_user_id || undefined)}
+                  />
+                  <div style={{
+                    position: "absolute", bottom: "-2px", right: "-2px",
+                    fontSize: "14px", background: "#13111E", borderRadius: "50%",
+                    width: "20px", height: "20px", display: "flex",
+                    alignItems: "center", justifyContent: "center",
+                  }}>
+                    {notifIcons[notif.type] || "🔔"}
+                  </div>
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{
+                    color: "white", fontSize: "13px",
+                    lineHeight: "1.4", marginBottom: "4px",
+                  }}>
+                    {notif.message}
+                  </div>
+                  <div style={{ color: "#635E80", fontSize: "11px" }}>
+                    {timeAgo(notif.created_at)}
+                  </div>
+                </div>
+                {!notif.is_read && (
+                  <div style={{
+                    width: "8px", height: "8px", borderRadius: "50%",
+                    background: "#9B6BFF", flexShrink: 0, marginTop: "5px",
+                  }} />
+                )}
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+    )}
+  </div>
+
+  {/* ===== زر لوحة التحكم ===== */}
+  <div
+    onClick={() => setDashboardPanelOpen(true)}
+    style={{
+      display: "flex", alignItems: "center", gap: "14px",
+      padding: "10px 16px", width: "100%", minWidth: "200px",
+      cursor: "pointer", borderRadius: "0 12px 12px 0",
+      background: "transparent", borderLeft: "3px solid transparent",
+      transition: "background 0.2s",
+    }}
+    onMouseEnter={(e) =>
+      ((e.currentTarget as HTMLDivElement).style.background = "rgba(255,255,255,0.05)")
+    }
+    onMouseLeave={(e) =>
+      ((e.currentTarget as HTMLDivElement).style.background = "transparent")
+    }
+  >
+    <span style={{ fontSize: "22px", flexShrink: 0, width: "28px", textAlign: "center" }}>🎛</span>
+    <span style={{ color: "#9C97B8", fontSize: "14px", whiteSpace: "nowrap" }}>
+      {t("dashboard_title")}
+    </span>
+  </div>
+
+  {/* ===== Spacer ===== */}
+  <div style={{ flex: 1 }} />
+
+  {/* ===== فاصل ===== */}
+  <div style={{
+    width: "100%", height: "1px",
+    background: "#1E1B2E", marginBottom: "8px",
+  }} />
+
+  {/* ===== زر تسجيل الخروج ===== */}
+  <div
+    onClick={handleSignOut}
+    style={{
+      display: "flex", alignItems: "center", gap: "14px",
+      padding: "10px 16px", width: "100%", minWidth: "200px",
+      cursor: "pointer", borderRadius: "0 12px 12px 0",
+      background: "transparent", borderLeft: "3px solid transparent",
+      transition: "background 0.2s",
+    }}
+    onMouseEnter={(e) =>
+      ((e.currentTarget as HTMLDivElement).style.background = "rgba(255,61,138,0.1)")
+    }
+    onMouseLeave={(e) =>
+      ((e.currentTarget as HTMLDivElement).style.background = "transparent")
+    }
+  >
+    <span style={{ fontSize: "20px", flexShrink: 0, width: "28px", textAlign: "center" }}>🚪</span>
+    <span style={{ color: "#FF3D8A", fontSize: "14px", whiteSpace: "nowrap" }}>
+      {t("logout")}
+    </span>
+  </div>
+</div>
       {/* Toast — مع dir */}
       {toastNotif && (
         <ToastNotification
@@ -1505,101 +2428,12 @@ useEffect(() => {
         />
       )}
 
-      {/* ===== هيدر ===== */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
-        <h1 style={{ color: "white", fontSize: "28px" }}>{t("main_sections")}</h1>
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <button onClick={handleSignOut} style={{ padding: "6px 14px", borderRadius: "8px", border: "1px solid #2E2A42", background: "transparent", color: "#9C97B8", cursor: "pointer", fontSize: "13px" }}>{t("logout")}</button>
-
-          {/* ===== زر الإشعارات ===== */}
-          <div style={{ position: "relative" }} ref={notifPanelRef}>
-            <button
-              onClick={() => { setShowNotifications(!showNotifications); if (!showNotifications) markAllRead(); }}
-              style={{ position: "relative", background: "#1A1826", border: "1px solid #2E2A42", borderRadius: "50%", width: "38px", height: "38px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "white" }}
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-                <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-              </svg>
-              {unreadNotifCount > 0 && (
-                <div style={{ position: "absolute", top: "-2px", right: "-2px", width: "18px", height: "18px", borderRadius: "50%", background: "#FF3D8A", color: "white", fontSize: "10px", fontWeight: "bold", display: "flex", alignItems: "center", justifyContent: "center", border: "2px solid #100F17" }}>
-                  {unreadNotifCount > 9 ? "9+" : unreadNotifCount}
-                </div>
-              )}
-            </button>
-
-            {/* ===== قائمة الإشعارات — التعديل الرئيسي ===== */}
-            {showNotifications && (
-              <div style={{
-                position: "absolute",
-                top: "46px",
-                // ← هنا التعديل: يتغير حسب اللغة
-                ...(dir === "rtl" ? { left: "0", right: "auto" } : { right: "0", left: "auto" }),
-                width: "340px",
-                background: "#13111E",
-                border: "1px solid #1E1B2E",
-                borderRadius: "16px",
-                boxShadow: "0 8px 40px rgba(0,0,0,0.6)",
-                zIndex: 2000,
-                overflow: "hidden",
-                direction: dir,
-              }}>
-                {/* هيدر القائمة */}
-                <div style={{ padding: "16px", borderBottom: "1px solid #1E1B2E", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <span style={{ color: "white", fontWeight: "bold", fontSize: "16px" }}>{t("notifications_title")}</span>
-                  {unreadNotifCount > 0 && (
-                    <button onClick={markAllRead} style={{ background: "transparent", border: "none", color: "#9B6BFF", cursor: "pointer", fontSize: "12px" }}>{t("mark_all_read")}</button>
-                  )}
-                </div>
-
-                {/* قائمة الإشعارات */}
-                <div style={{ maxHeight: "400px", overflowY: "auto" }}>
-                  {notifications.length === 0 ? (
-                    <div style={{ color: "#635E80", textAlign: "center", padding: "40px 20px", fontSize: "13px" }}>{t("no_notifications")}</div>
-                  ) : (
-                    notifications.map((notif) => (
-                      <div
-                        key={notif.id}
-                        onClick={() => markOneRead(notif.id)}
-                        style={{ padding: "12px 16px", display: "flex", alignItems: "flex-start", gap: "10px", borderBottom: "1px solid #1A1726", background: notif.is_read ? "transparent" : "rgba(155,107,255,0.06)", cursor: "pointer", transition: "background 0.15s" }}
-                        onMouseEnter={(e) => (e.currentTarget.style.background = "#1A1726")}
-                        onMouseLeave={(e) => (e.currentTarget.style.background = notif.is_read ? "transparent" : "rgba(155,107,255,0.06)")}
-                      >
-                        <div style={{ position: "relative", flexShrink: 0 }}>
-                          <Avatar name={usernameFor(notif.from_user_id)} avatarUrl={avatarUrlFor(notif.from_user_id)} size={38} onClick={() => viewProfile(notif.from_user_id || undefined)} />
-                          <div style={{ position: "absolute", bottom: "-2px", right: "-2px", fontSize: "14px", background: "#13111E", borderRadius: "50%", width: "20px", height: "20px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                            {notifIcons[notif.type] || "🔔"}
-                          </div>
-                        </div>
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ color: "white", fontSize: "13px", lineHeight: "1.4", marginBottom: "4px" }}>{notif.message}</div>
-                          <div style={{ color: "#635E80", fontSize: "11px" }}>{timeAgo(notif.created_at)}</div>
-                        </div>
-                        {!notif.is_read && <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#9B6BFF", flexShrink: 0, marginTop: "5px" }} />}
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* أفاتار */}
-          <div style={{ position: "relative" }}>
-            <Avatar name={myProfile.username} avatarUrl={myProfile.avatar_url} size={36} onClick={() => viewProfile(user.id)} />
-            {myProfile.is_premium && <span style={{ position: "absolute", bottom: -2, right: -2, fontSize: "13px" }}>💎</span>}
-          </div>
-        </div>
-      </div>
-
-      {/* أقسام رئيسية */}
-      <div style={{ display: "flex", gap: "16px", marginBottom: "24px", flexWrap: "wrap" }}>
-        {sections.map((s) => (
-          <div key={s.id} onClick={() => selectSection(s.id)} style={{ background: selectedId === s.id ? s.color : "#1A1826", border: `2px solid ${s.color}`, borderRadius: "12px", padding: "20px", color: selectedId === s.id ? "#0A0910" : "white", width: "200px", cursor: "pointer", fontWeight: "bold" }}>
-            {s.name}
-          </div>
-        ))}
-      </div>
+             <MainSectionsCarousel
+  sections={sections}
+  selectedId={selectedId}
+  onSelect={selectSection}
+  dir={dir}
+/>
 
       {/* تبويبات */}
       <div style={{ display: "flex", gap: "8px", marginBottom: "24px", flexWrap: "wrap" }}>
@@ -1704,43 +2538,78 @@ useEffect(() => {
         </div>
       )}
 
-      {/* ===== فيديوهات ===== */}
-      {tab === "videos" && (
-        <div>
-          <div style={{ display: "flex", flexDirection: "column", gap: "16px", maxWidth: "500px", marginBottom: "24px" }}>
-            {videosForSection.length === 0 && <div style={{ color: "#635E80" }}>{t("no_videos")}</div>}
-            {videosForSection.map((video) => (
-              <div key={video.id} style={{ background: "#1A1826", border: "1px solid #2E2A42", borderRadius: "12px", padding: "16px" }}>
-                <div style={{ color: "white", fontWeight: "bold", marginBottom: "4px" }}>{video.title}</div>
-                <div onClick={() => viewProfile(video.user_id)} style={{ display: "flex", alignItems: "center", gap: "6px", cursor: "pointer", width: "fit-content", marginBottom: "10px" }}>
-                  <Avatar name={usernameFor(video.user_id)} avatarUrl={avatarUrlFor(video.user_id)} size={20} />
-                  <span style={{ color: "#9B6BFF", fontSize: "12px" }}>{usernameFor(video.user_id)}</span>
-                  {isPremiumUser(video.user_id) && <span style={{ fontSize: "11px" }}>💎</span>}
-                </div>
-                <video src={video.url} controls style={{ width: "100%", borderRadius: "8px", marginBottom: "10px" }} />
-                <button onClick={() => toggleVideoLike(video.id)} style={{ padding: "5px 12px", borderRadius: "8px", border: "1px solid #2E2A42", background: isVideoLikedByMe(video.id) ? "#9B6BFF" : "transparent", color: isVideoLikedByMe(video.id) ? "#0A0910" : "#9C97B8", cursor: "pointer", fontSize: "13px", marginBottom: "10px" }}>♥ {likeCountForVideo(video.id)}</button>
-                <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                  {commentsForVideo(video.id).map((c) => (
-                    <div key={c.id} style={{ fontSize: "13px", display: "flex", justifyContent: "space-between", gap: "6px" }}>
-                      <div><span onClick={() => viewProfile(c.user_id)} style={{ color: "#9B6BFF", fontWeight: "bold", cursor: "pointer" }}>{usernameFor(c.user_id)}: </span><span style={{ color: "#EDEAF6" }}>{c.text}</span></div>
-                      {user.id === c.user_id && <button onClick={() => deleteVideoComment(c.id)} style={{ background: "transparent", border: "none", color: "#635E80", cursor: "pointer" }}>✕</button>}
-                    </div>
-                  ))}
-                  <div style={{ display: "flex", gap: "6px" }}>
-                    <input value={newVideoCommentText[video.id] || ""} onChange={(e) => setNewVideoCommentText((prev) => ({ ...prev, [video.id]: e.target.value }))} onKeyDown={(e) => e.key === "Enter" && addVideoComment(video.id)} placeholder={t("write_comment_placeholder")} style={{ flex: 1, padding: "6px 10px", borderRadius: "6px", border: "1px solid #2E2A42", background: "#100F17", color: "white", fontSize: "13px" }} />
-                    <button onClick={() => addVideoComment(video.id)} style={{ padding: "6px 12px", borderRadius: "6px", border: "none", background: "#9B6BFF", color: "#0A0910", cursor: "pointer", fontSize: "13px" }}>{t("comment_button")}</button>
-                  </div>
-                </div>
+    {/* ===== فيديوهات ===== */}
+{tab === "videos" && (
+  <div style={{ maxWidth: "1100px" }}>
+    {!showUploadVideoModal && (
+      <button onClick={() => setShowUploadVideoModal(true)} style={{ position: "fixed", bottom: "100px", ...(dir === "rtl" ? { left: "28px" } : { right: "28px" }), padding: "14px 24px", borderRadius: "50px", border: "none", background: "linear-gradient(135deg, #9B6BFF, #FF3D8A)", color: "white", cursor: "pointer", fontSize: "15px", fontWeight: "bold", boxShadow: "0 4px 24px rgba(155,107,255,0.5)", zIndex: 100, display: "flex", alignItems: "center", gap: "10px" }}>
+        <span style={{ fontSize: "22px" }}>📹</span><span>{t("upload_video")}</span>
+      </button>
+    )}
+
+    {videosForSection.length === 0 ? (
+      <div style={{ color: "#635E80", textAlign: "center", padding: "60px", background: "#1A1826", borderRadius: "16px" }}>🎬 {t("no_videos")}</div>
+    ) : (
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "20px 16px" }}>
+        {videosForSection.map((video) => (
+          <div key={video.id} onClick={() => setWatchingVideo(video)} style={{ cursor: "pointer" }}>
+            <div style={{ position: "relative", width: "100%", aspectRatio: "16/9", borderRadius: "12px", overflow: "hidden", background: "#000" }}>
+              {video.thumbnail_url ? (
+                <img src={video.thumbnail_url} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              ) : (
+                <video src={video.url} style={{ width: "100%", height: "100%", objectFit: "cover" }} muted preload="metadata" />
+              )}
+           {/* ✅ الكود الجديد - يظهر زر Play فقط عند hover */}
+<div style={{ 
+  position: "absolute", 
+  inset: 0, 
+  display: "flex", 
+  alignItems: "center",
+  justifyContent: "center", 
+  background: "rgba(0,0,0,0)", 
+  transition: "background 0.2s",
+  opacity: 0,  // ← مخفي افتراضياً
+}}
+ onMouseEnter={(e) => {
+   (e.currentTarget as HTMLDivElement).style.background = "rgba(0,0,0,0.4)";
+   (e.currentTarget as HTMLDivElement).style.opacity = "1";
+ }}
+ onMouseLeave={(e) => {
+   (e.currentTarget as HTMLDivElement).style.background = "rgba(0,0,0,0)";
+   (e.currentTarget as HTMLDivElement).style.opacity = "0";
+ }}>
+ <div style={{ 
+   width: "52px", 
+   height: "52px", 
+   borderRadius: "50%", 
+   background: "rgba(255,255,255,0.95)", 
+   display: "flex", 
+   alignItems: "center", 
+   justifyContent: "center", 
+   fontSize: "20px",
+   boxShadow: "0 4px 16px rgba(0,0,0,0.4)"
+ }}>▶</div>
+</div>
+            </div>
+            <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+              <div onClick={(e) => { e.stopPropagation(); viewProfile(video.user_id); }} style={{ cursor: "pointer", flexShrink: 0 }}>
+                <Avatar name={usernameFor(video.user_id)} avatarUrl={avatarUrlFor(video.user_id)} size={36} />
               </div>
-            ))}
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ color: "white", fontWeight: 600, fontSize: "14px", lineHeight: 1.3, marginBottom: "4px", overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const }}>{video.title}</div>
+                <div onClick={(e) => { e.stopPropagation(); viewProfile(video.user_id); }} style={{ color: "#9C97B8", fontSize: "12px", display: "flex", alignItems: "center", gap: "4px", cursor: "pointer", width: "fit-content" }}>
+                  {usernameFor(video.user_id)}
+                  {isPremiumUser(video.user_id) && <span style={{ fontSize: "10px" }}>💎</span>}
+                </div>
+                <div style={{ color: "#635E80", fontSize: "11px", marginTop: "2px" }}>♥ {likeCountForVideo(video.id)} · 💬 {commentsForVideo(video.id).length}</div>
+              </div>
+            </div>
           </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: "8px", maxWidth: "500px" }}>
-            <input value={newVideoTitle} onChange={(e) => setNewVideoTitle(e.target.value)} placeholder={t("video_title_placeholder")} style={{ padding: "10px", borderRadius: "8px", border: "1px solid #2E2A42", background: "#1A1826", color: "white" }} />
-            <input type="file" accept="video/*" onChange={(e) => setVideoFile(e.target.files?.[0] || null)} style={{ color: "#9C97B8" }} />
-            <button onClick={uploadVideo} disabled={uploading} style={{ padding: "10px 20px", borderRadius: "8px", border: "none", background: "#9B6BFF", color: "#0A0910", cursor: "pointer", alignSelf: "flex-start", opacity: uploading ? 0.6 : 1 }}>{uploading ? t("uploading_video") : t("upload_video")}</button>
-          </div>
-        </div>
-      )}
+        ))}
+      </div>
+    )}
+  </div>
+)}
 
       {/* ===== مجتمعات ===== */}
       {tab === "communities" && (
@@ -2555,41 +3424,6 @@ useEffect(() => {
         );
       })()}
 
-      {/* ===== زر الرسائل العائم ===== */}
-<div
-  onClick={() => { setDmPanelOpen(!dmPanelOpen); if (!dmPanelOpen) setActiveDmUserId(null); }}
-  style={{
-    position: "fixed",
-    bottom: "28px",
-    // ← يتغير حسب اللغة
-    ...(dir === "rtl" ? { left: "28px" } : { right: "28px" }),
-    width: "58px", height: "58px",
-    borderRadius: "50%",
-    background: "linear-gradient(135deg, #9B6BFF 0%, #FF3D8A 100%)",
-    display: "flex", alignItems: "center", justifyContent: "center",
-    cursor: "pointer",
-    boxShadow: "0 4px 24px rgba(155,107,255,0.45)",
-    zIndex: 1000,
-    transition: "transform 0.2s ease",
-  }}
-  onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.transform = "scale(1.1)"; }}
-  onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.transform = "scale(1)"; }}
->
-  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-  </svg>
-  {unreadDmCount > 0 && (
-    <div style={{
-      position: "absolute", top: "2px", right: "2px",
-      width: "18px", height: "18px", borderRadius: "50%",
-      background: "#FF3D8A", color: "white", fontSize: "10px",
-      fontWeight: "bold", display: "flex", alignItems: "center",
-      justifyContent: "center", border: "2px solid #100F17"
-    }}>
-      {unreadDmCount > 9 ? "9+" : unreadDmCount}
-    </div>
-  )}
-</div>
 
 {/* ===== لوحة الرسائل ===== */}
 <div style={{
@@ -2752,19 +3586,27 @@ useEffect(() => {
         )}
 
         {/* ===== فيديو ===== */}
-        {m.video_url && (
-          <video
-            src={m.video_url}
-            controls
-            style={{
-              width: "100%",
-              maxWidth: "200px",
-              borderRadius: "10px",
-              display: "block",
-              marginBottom: m.text ? "8px" : "0"
-            }}
-          />
-        )}
+       {m.video_url && (
+  <video
+    src={m.video_url}
+    controls
+    playsInline
+    preload="metadata"
+    controlsList="nodownload"
+    style={{
+      width: "100%",
+      maxWidth: "200px",
+      borderRadius: "10px",
+      display: "block",
+      marginBottom: m.text ? "8px" : "0",
+      background: "#000",
+      objectFit: "contain",
+    }}
+    onError={(e) => {
+      console.error("Video playback error:", e);
+    }}
+  />
+)}
 
         {/* ===== النص مع الروابط ===== */}
         {m.text && (
@@ -3007,6 +3849,629 @@ useEffect(() => {
           </>
         )}
       </div>
+      {/* ===== نافذة رفع فيديو احترافية ===== */}
+{showUploadVideoModal && (
+  <div style={{
+    position: "fixed", inset: 0,
+    background: "rgba(0,0,0,0.85)",
+    display: "flex", alignItems: "center", justifyContent: "center",
+    zIndex: 1000, padding: "20px",
+    backdropFilter: "blur(8px)"
+  }} onClick={() => {
+    setShowUploadVideoModal(false);
+    setNewVideoTitle("");
+    setVideoDescription("");
+    setVideoTags("");
+    setVideoFile(null);
+    setVideoThumbnail(null);
+  }}>
+    <div onClick={(e) => e.stopPropagation()} style={{
+      background: "#1A1826",
+      borderRadius: "24px",
+      width: "100%",
+      maxWidth: "800px",
+      maxHeight: "90vh",
+      overflow: "auto",
+      border: "1px solid #2E2A42",
+      boxShadow: "0 20px 60px rgba(0,0,0,0.5)"
+    }}>
+      
+{/* هيدر */}
+      <div style={{
+        padding: "24px",
+        borderBottom: "1px solid #2E2A42",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        position: "sticky",
+        top: 0,
+        background: "#1A1826",
+        zIndex: 10
+      }}>
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "12px"
+        }}>
+          <div style={{
+            width: "48px",
+            height: "48px",
+            borderRadius: "12px",
+            background: "linear-gradient(135deg, #9B6BFF, #FF3D8A)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: "24px"
+          }}>📹</div>
+          <div>
+            <h2 style={{
+              color: "white",
+              fontSize: "22px",
+              fontWeight: "bold",
+              margin: 0
+            }}>{t("upload_video")}</h2>
+            <p style={{
+              color: "#9C97B8",
+              fontSize: "13px",
+              margin: "4px 0 0 0"
+            }}>
+              {language === "ar" ? "شارك فيديو مع المجتمع" : language === "fr" ? "Partagez une vidéo" : "Share your video"}
+            </p>
+          </div>
+        </div>
+        <button onClick={() => {
+          setShowUploadVideoModal(false);
+          setNewVideoTitle("");
+          setVideoDescription("");
+          setVideoTags("");
+          setVideoFile(null);
+          setVideoThumbnail(null);
+        }} style={{
+          width: "40px",
+          height: "40px",
+          borderRadius: "50%",
+          border: "none",
+          background: "#2E2A42",
+          color: "#9C97B8",
+          cursor: "pointer",
+          fontSize: "20px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center"
+        }}>✕</button>
+      </div>
+
+{/* المحتوى */}
+      <div style={{ padding: "24px" }}>
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: "24px"
+        }}>
+          
+{/* العمود الأيسر */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+            
+{/* رفع الفيديو */}
+            <div>
+              <label style={{
+                color: "white",
+                fontSize: "14px",
+                fontWeight: "bold",
+                marginBottom: "10px",
+                display: "block"
+              }}>
+                📹 {language === "ar" ? "الفيديو" : language === "fr" ? "Vidéo" : "Video"} *
+              </label>
+              {!videoFile ? (
+                <label style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "12px",
+                  padding: "40px 20px",
+                  borderRadius: "16px",
+                  border: "2px dashed #2E2A42",
+                  background: "#100F17",
+                  cursor: "pointer",
+                  transition: "all 0.2s"
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = "#9B6BFF";
+                  e.currentTarget.style.background = "#1A1726";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = "#2E2A42";
+                  e.currentTarget.style.background = "#100F17";
+                }}>
+                  <div style={{
+                    width: "64px",
+                    height: "64px",
+                    borderRadius: "50%",
+                    background: "rgba(155,107,255,0.1)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "32px"
+                  }}>🎬</div>
+                  <div style={{ textAlign: "center" }}>
+                    <div style={{
+                      color: "white",
+                      fontSize: "15px",
+                      fontWeight: "bold",
+                      marginBottom: "4px"
+                    }}>
+                      {language === "ar" ? "اضغط لاختيار فيديو" : language === "fr" ? "Cliquez pour choisir" : "Click to upload video"}
+                    </div>
+                    <div style={{
+                      color: "#635E80",
+                      fontSize: "12px"
+                    }}>MP4, MOV, AVI • Max 500MB</div>
+                  </div>
+                  <input
+                    type="file"
+                    accept="video/*"
+                    style={{ display: "none" }}
+                    onChange={(e) => setVideoFile(e.target.files?.[0] || null)}
+                  />
+                </label>
+              ) : (
+                <div style={{
+                  padding: "16px",
+                  borderRadius: "12px",
+                  background: "#100F17",
+                  border: "1px solid #2E2A42"
+                }}>
+                  <div style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "12px"
+                  }}>
+                    <div style={{
+                      width: "48px",
+                      height: "48px",
+                      borderRadius: "8px",
+                      background: "linear-gradient(135deg, #9B6BFF, #FF3D8A)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "24px",
+                      flexShrink: 0
+                    }}>✅</div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{
+                        color: "white",
+                        fontSize: "14px",
+                        fontWeight: "bold",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap"
+                      }}>{videoFile.name}</div>
+                      <div style={{
+                        color: "#9C97B8",
+                        fontSize: "12px",
+                        marginTop: "2px"
+                      }}>
+                        {(videoFile.size / 1024 / 1024).toFixed(2)} MB
+                      </div>
+                    </div>
+                    <button onClick={() => setVideoFile(null)} style={{
+                      background: "#2E2A42",
+                      border: "none",
+                      color: "#FF3D8A",
+                      cursor: "pointer",
+                      width: "32px",
+                      height: "32px",
+                      borderRadius: "50%",
+                      fontSize: "16px"
+                    }}>✕</button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+{/* رفع صورة مصغرة */}
+            <div>
+              <label style={{
+                color: "white",
+                fontSize: "14px",
+                fontWeight: "bold",
+                marginBottom: "10px",
+                display: "block"
+              }}>
+                🖼️ {language === "ar" ? "الصورة المصغرة" : language === "fr" ? "Miniature" : "Thumbnail"} *
+              </label>
+              {!videoThumbnail ? (
+                <label style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "10px",
+                  padding: "30px 20px",
+                  borderRadius: "12px",
+                  border: "2px dashed #2E2A42",
+                  background: "#100F17",
+                  cursor: "pointer",
+                  transition: "all 0.2s"
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = "#9B6BFF";
+                  e.currentTarget.style.background = "#1A1726";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = "#2E2A42";
+                  e.currentTarget.style.background = "#100F17";
+                }}>
+                  <div style={{ fontSize: "40px" }}>📸</div>
+                  <div style={{
+                    color: "#9C97B8",
+                    fontSize: "13px",
+                    textAlign: "center"
+                  }}>
+                    {language === "ar" ? "اختر صورة مصغرة" : language === "fr" ? "Choisir miniature" : "Choose thumbnail"}
+                  </div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    style={{ display: "none" }}
+                    onChange={(e) => setVideoThumbnail(e.target.files?.[0] || null)}
+                  />
+                </label>
+              ) : (
+                <div style={{ position: "relative" }}>
+                  <img
+                    src={URL.createObjectURL(videoThumbnail)}
+                    alt="thumbnail"
+                    style={{
+                      width: "100%",
+                      borderRadius: "12px",
+                      aspectRatio: "16/9",
+                      objectFit: "cover"
+                    }}
+                  />
+                  <button onClick={() => setVideoThumbnail(null)} style={{
+                    position: "absolute",
+                    top: "8px",
+                    right: "8px",
+                    background: "rgba(0,0,0,0.8)",
+                    border: "none",
+                    color: "#FF3D8A",
+                    cursor: "pointer",
+                    width: "32px",
+                    height: "32px",
+                    borderRadius: "50%",
+                    fontSize: "16px"
+                  }}>✕</button>
+                </div>
+              )}
+            </div>
+          </div>
+
+{/* العمود الأيمن */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+            
+{/* عنوان الفيديو */}
+            <div>
+              <label style={{
+                color: "white",
+                fontSize: "14px",
+                fontWeight: "bold",
+                marginBottom: "10px",
+                display: "block"
+              }}>
+                📝 {language === "ar" ? "العنوان" : language === "fr" ? "Titre" : "Title"} *
+              </label>
+              <input
+                value={newVideoTitle}
+                onChange={(e) => setNewVideoTitle(e.target.value)}
+                placeholder={t("video_title_placeholder")}
+                maxLength={100}
+                style={{
+                  width: "100%",
+                  padding: "12px 16px",
+                  borderRadius: "12px",
+                  border: "1px solid #2E2A42",
+                  background: "#100F17",
+                  color: "white",
+                  fontSize: "14px",
+                  outline: "none",
+                  boxSizing: "border-box"
+                }}
+              />
+              <div style={{
+                color: "#635E80",
+                fontSize: "11px",
+                marginTop: "6px",
+                textAlign: dir === "rtl" ? "left" : "right"
+              }}>
+                {newVideoTitle.length}/100
+              </div>
+            </div>
+
+{/* وصف الفيديو */}
+            <div>
+              <label style={{
+                color: "white",
+                fontSize: "14px",
+                fontWeight: "bold",
+                marginBottom: "10px",
+                display: "block"
+              }}>
+                📄 {language === "ar" ? "الوصف" : language === "fr" ? "Description" : "Description"}
+              </label>
+              <textarea
+                value={videoDescription}
+                onChange={(e) => setVideoDescription(e.target.value)}
+                placeholder={language === "ar" ? "أخبر المشاهدين عن محتوى الفيديو..." : language === "fr" ? "Décrivez votre vidéo..." : "Tell viewers about your video..."}
+                rows={5}
+                maxLength={5000}
+                style={{
+                  width: "100%",
+                  padding: "12px 16px",
+                  borderRadius: "12px",
+                  border: "1px solid #2E2A42",
+                  background: "#100F17",
+                  color: "white",
+                  fontSize: "14px",
+                  outline: "none",
+                  resize: "vertical",
+                  fontFamily: "inherit",
+                  boxSizing: "border-box"
+                }}
+              />
+              <div style={{
+                color: "#635E80",
+                fontSize: "11px",
+                marginTop: "6px",
+                textAlign: dir === "rtl" ? "left" : "right"
+              }}>
+                {videoDescription.length}/5000
+              </div>
+            </div>
+
+{/* الكلمات المفتاحية */}
+            <div>
+              <label style={{
+                color: "white",
+                fontSize: "14px",
+                fontWeight: "bold",
+                marginBottom: "10px",
+                display: "block"
+              }}>
+                🏷️ {language === "ar" ? "الكلمات المفتاحية" : language === "fr" ? "Tags" : "Tags"}
+              </label>
+              <input
+                value={videoTags}
+                onChange={(e) => setVideoTags(e.target.value)}
+                placeholder={language === "ar" ? "ألعاب، مونتاج، تعليمي... (افصل بفاصلة)" : "gaming, tutorial, montage..."}
+                style={{
+                  width: "100%",
+                  padding: "12px 16px",
+                  borderRadius: "12px",
+                  border: "1px solid #2E2A42",
+                  background: "#100F17",
+                  color: "white",
+                  fontSize: "14px",
+                  outline: "none",
+                  boxSizing: "border-box"
+                }}
+              />
+            </div>
+
+{/* التصنيف */}
+            <div>
+              <label style={{
+                color: "white",
+                fontSize: "14px",
+                fontWeight: "bold",
+                marginBottom: "10px",
+                display: "block"
+              }}>
+                📂 {language === "ar" ? "التصنيف" : language === "fr" ? "Catégorie" : "Category"}
+              </label>
+              <select
+                value={videoCategory}
+                onChange={(e) => setVideoCategory(e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "12px 16px",
+                  borderRadius: "12px",
+                  border: "1px solid #2E2A42",
+                  background: "#100F17",
+                  color: "white",
+                  fontSize: "14px",
+                  outline: "none",
+                  cursor: "pointer",
+                  boxSizing: "border-box"
+                }}
+              >
+                <option value="">-- {language === "ar" ? "اختر" : language === "fr" ? "Choisir" : "Select"} --</option>
+                <option value="gaming">{language === "ar" ? "ألعاب" : language === "fr" ? "Jeux" : "Gaming"}</option>
+                <option value="editing">{language === "ar" ? "مونتاج" : language === "fr" ? "Montage" : "Editing"}</option>
+                <option value="tutorial">{language === "ar" ? "تعليمي" : language === "fr" ? "Tutoriel" : "Tutorial"}</option>
+                <option value="entertainment">{language === "ar" ? "ترفيه" : language === "fr" ? "Divertissement" : "Entertainment"}</option>
+                <option value="sports">{language === "ar" ? "رياضة" : language === "fr" ? "Sport" : "Sports"}</option>
+                <option value="music">{language === "ar" ? "موسيقى" : language === "fr" ? "Musique" : "Music"}</option>
+              </select>
+            </div>
+
+{/* الخصوصية */}
+            <div>
+              <label style={{
+                color: "white",
+                fontSize: "14px",
+                fontWeight: "bold",
+                marginBottom: "10px",
+                display: "block"
+              }}>
+                🔒 {language === "ar" ? "الخصوصية" : language === "fr" ? "Confidentialité" : "Privacy"}
+              </label>
+              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                {[
+                  { value: "public", icon: "🌍", label: language === "ar" ? "عام" : language === "fr" ? "Public" : "Public" },
+                  { value: "unlisted", icon: "🔗", label: language === "ar" ? "غير مدرج" : language === "fr" ? "Non répertorié" : "Unlisted" },
+                  { value: "private", icon: "🔒", label: language === "ar" ? "خاص" : language === "fr" ? "Privé" : "Private" }
+                ].map((opt) => (
+                  <label key={opt.value} style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "12px",
+                    padding: "12px",
+                    borderRadius: "10px",
+                    border: `2px solid ${videoPrivacy === opt.value ? "#9B6BFF" : "#2E2A42"}`,
+                    background: videoPrivacy === opt.value ? "rgba(155,107,255,0.1)" : "#100F17",
+                    cursor: "pointer",
+                    transition: "all 0.2s"
+                  }}>
+                    <input
+                      type="radio"
+                      name="privacy"
+                      value={opt.value}
+                      checked={videoPrivacy === opt.value}
+                      onChange={(e) => setVideoPrivacy(e.target.value as any)}
+                      style={{ display: "none" }}
+                    />
+                    <span style={{ fontSize: "20px" }}>{opt.icon}</span>
+                    <span style={{
+                      color: "white",
+                      fontSize: "14px",
+                      fontWeight: videoPrivacy === opt.value ? "bold" : "normal"
+                    }}>{opt.label}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+{/* أزرار الإجراء */}
+        <div style={{
+          marginTop: "30px",
+          paddingTop: "20px",
+          borderTop: "1px solid #2E2A42",
+          display: "flex",
+          gap: "12px",
+          justifyContent: "flex-end"
+        }}>
+          <button onClick={() => {
+            setShowUploadVideoModal(false);
+            setNewVideoTitle("");
+            setVideoDescription("");
+            setVideoTags("");
+            setVideoFile(null);
+            setVideoThumbnail(null);
+          }} style={{
+            padding: "12px 24px",
+            borderRadius: "12px",
+            border: "1px solid #2E2A42",
+            background: "transparent",
+            color: "white",
+            cursor: "pointer",
+            fontSize: "14px",
+            fontWeight: "bold"
+          }}>
+            {t("cancel")}
+          </button>
+          <button
+            onClick={async () => {
+              if (!newVideoTitle.trim() || !videoFile || !videoThumbnail) {
+                alert(language === "ar" ? "الرجاء ملء جميع الحقول المطلوبة" : "Please fill all required fields");
+                return;
+              }
+              await uploadVideo();
+              setShowUploadVideoModal(false);
+              setNewVideoTitle("");
+              setVideoDescription("");
+              setVideoTags("");
+              setVideoFile(null);
+              setVideoThumbnail(null);
+            }}
+            disabled={uploading || !newVideoTitle.trim() || !videoFile || !videoThumbnail}
+            style={{
+              padding: "12px 32px",
+              borderRadius: "12px",
+              border: "none",
+              background: (newVideoTitle.trim() && videoFile && videoThumbnail)
+                ? "linear-gradient(135deg, #9B6BFF, #FF3D8A)"
+                : "#2E2A42",
+              color: "white",
+              cursor: (newVideoTitle.trim() && videoFile && videoThumbnail) ? "pointer" : "not-allowed",
+              fontSize: "15px",
+              fontWeight: "bold",
+              opacity: uploading ? 0.7 : 1,
+              display: "flex",
+              alignItems: "center",
+              gap: "8px"
+            }}
+          >
+            {uploading ? (
+              <>
+                <div style={{
+                  width: "16px",
+                  height: "16px",
+                  border: "2px solid white",
+                  borderTopColor: "transparent",
+                  borderRadius: "50%",
+                  animation: "spin 0.8s linear infinite"
+                }} />
+                <span>{t("uploading_video")}</span>
+              </>
+            ) : (
+              <>
+                <span>🚀</span>
+                <span>{t("upload_video")}</span>
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+{watchingVideo && (
+  <div onClick={() => setWatchingVideo(null)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.9)", zIndex: 2000, display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }}>
+    <div onClick={(e) => e.stopPropagation()} style={{ background: "#13111E", borderRadius: "16px", width: "100%", maxWidth: "760px", maxHeight: "90vh", overflowY: "auto" }}>
+      <video src={watchingVideo.url} controls autoPlay style={{ width: "100%", maxHeight: "50vh", background: "#000", borderRadius: "16px 16px 0 0" }} />
+      <div style={{ padding: "20px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "12px" }}>
+          <div style={{ color: "white", fontWeight: "bold", fontSize: "18px" }}>{watchingVideo.title}</div>
+          <button onClick={() => setWatchingVideo(null)} style={{ background: "transparent", border: "none", color: "#9C97B8", cursor: "pointer", fontSize: "20px" }}>✕</button>
+        </div>
+        <div onClick={() => viewProfile(watchingVideo.user_id)} style={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", marginBottom: "14px" }}>
+          <Avatar name={usernameFor(watchingVideo.user_id)} avatarUrl={avatarUrlFor(watchingVideo.user_id)} size={38} />
+          <div style={{ color: "white", fontSize: "14px", fontWeight: "bold" }}>{usernameFor(watchingVideo.user_id)} {isPremiumUser(watchingVideo.user_id) && "💎"}</div>
+        </div>
+        <button onClick={() => toggleVideoLike(watchingVideo.id)} style={{ padding: "6px 16px", borderRadius: "20px", border: "none", background: isVideoLikedByMe(watchingVideo.id) ? "linear-gradient(135deg, #FF3D8A, #FF6B6B)" : "#221F32", color: isVideoLikedByMe(watchingVideo.id) ? "white" : "#9C97B8", cursor: "pointer", fontSize: "13px", fontWeight: "bold", marginBottom: "14px" }}>
+          {isVideoLikedByMe(watchingVideo.id) ? "❤️" : "🤍"} {likeCountForVideo(watchingVideo.id)}
+        </button>
+        {watchingVideo.description && (
+          <div style={{ background: "#1A1726", padding: "12px 14px", borderRadius: "10px", color: "#C4C0D6", fontSize: "13px", lineHeight: "1.5", marginBottom: "16px", whiteSpace: "pre-wrap" }}>
+            {watchingVideo.description}
+          </div>
+        )}
+        <div style={{ color: "white", fontWeight: "bold", fontSize: "14px", marginBottom: "10px" }}>💬 {commentsForVideo(watchingVideo.id).length}</div>
+        <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "14px" }}>
+          {commentsForVideo(watchingVideo.id).map((c) => (
+            <div key={c.id} style={{ display: "flex", gap: "8px" }}>
+              <Avatar name={usernameFor(c.user_id)} avatarUrl={avatarUrlFor(c.user_id)} size={28} onClick={() => viewProfile(c.user_id)} />
+              <div style={{ background: "#1A1726", padding: "8px 12px", borderRadius: "10px", flex: 1 }}>
+                <span onClick={() => viewProfile(c.user_id)} style={{ color: "#9B6BFF", fontWeight: "bold", cursor: "pointer", fontSize: "12px" }}>{usernameFor(c.user_id)}: </span>
+                <span style={{ color: "#EDEAF6", fontSize: "13px" }}>{c.text}</span>
+              </div>
+              {user.id === c.user_id && <button onClick={() => deleteVideoComment(c.id)} style={{ background: "transparent", border: "none", color: "#635E80", cursor: "pointer" }}>✕</button>}
+            </div>
+          ))}
+        </div>
+        <div style={{ display: "flex", gap: "8px" }}>
+          <input value={newVideoCommentText[watchingVideo.id] || ""} onChange={(e) => setNewVideoCommentText((prev) => ({ ...prev, [watchingVideo.id]: e.target.value }))} onKeyDown={(e) => e.key === "Enter" && addVideoComment(watchingVideo.id)} placeholder={t("write_comment_placeholder")} style={{ flex: 1, padding: "10px 14px", borderRadius: "20px", border: "1px solid #2E2A42", background: "#1A1726", color: "white", fontSize: "13px", outline: "none" }} />
+          <button onClick={() => addVideoComment(watchingVideo.id)} style={{ padding: "10px 18px", borderRadius: "20px", border: "none", background: "#9B6BFF", color: "white", cursor: "pointer", fontSize: "13px", fontWeight: "bold" }}>{t("comment_button")}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
     </main>
   );
 }
