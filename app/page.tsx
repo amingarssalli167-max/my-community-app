@@ -959,12 +959,12 @@ function MainSectionsCarousel({
                 scale,
                 opacity,
               }}
-              transition={{
-                type: "spring",
-                stiffness: 260,
-                damping: 26,
-                mass: 0.8,
-              }}
+           transition={{
+  type: "spring",
+  stiffness: 340,
+  damping: 30,
+  mass: 0.65,
+}}
               style={{
                 position: "absolute",
                 left: "50%",
@@ -1004,11 +1004,11 @@ function MainSectionsCarousel({
                 {section.media.type === "video" ? (
                   <video
                     src={section.media.src}
-                    autoPlay
+                    autoPlay={Math.abs(position) <= 1}
                     muted
                     loop
                     playsInline
-                    preload="metadata"
+                    preload={Math.abs(position) <= 1 ? "auto" : "none"}
                     style={{
                       position: "absolute",
                       inset: 0,
@@ -1320,7 +1320,8 @@ const sections = [
   const [profiles, setProfiles] = useState<Profile[]>([]); const [profilesLoaded, setProfilesLoaded] = useState(false);
   const [completeUsername, setCompleteUsername] = useState(""); const [completeError, setCompleteError] = useState(""); const [savingUsername, setSavingUsername] = useState(false);
   const [selectedId, setSelectedId] = useState("gaming"); const [selectedSubId, setSelectedSubId] = useState("gaming-general");
-  const [tab, setTab] = useState<"chat" | "posts" | "videos" | "profile" | "communities">("chat");
+  const [inSection, setInSection] = useState(false);
+  const [tab, setTab] = useState< "chat" | "posts" | "videos" | "profile" | "communities">("chat");
   const [messages, setMessages] = useState<Message[]>([]); const [newMessage, setNewMessage] = useState(""); const [newMessageVideo, setNewMessageVideo] = useState<File | null>(null); const [sendingMessage, setSendingMessage] = useState(false);
   const [posts, setPosts] = useState<Post[]>([]); const [newPostTitle, setNewPostTitle] = useState(""); const [newPostBody, setNewPostBody] = useState(""); const [newPostVideo, setNewPostVideo] = useState<File | null>(null); const [newPostIsPremium, setNewPostIsPremium] = useState(false); const [publishingPost, setPublishingPost] = useState(false);
   const [videos, setVideos] = useState<Video[]>([]); const [newVideoTitle, setNewVideoTitle] = useState(""); const [videoFile, setVideoFile] = useState<File | null>(null); const [uploading, setUploading] = useState(false);
@@ -1340,6 +1341,7 @@ const [watchingVideo, setWatchingVideo] = useState<Video | null>(null);
   const [directMessages, setDirectMessages] = useState<DirectMessage[]>([]); const [activeDmUserId, setActiveDmUserId] = useState<string | null>(null); const [newDmText, setNewDmText] = useState(""); const [sendingDm, setSendingDm] = useState(false);
   const [dmPanelOpen, setDmPanelOpen] = useState(false); const [dmSearch, setDmSearch] = useState("");
   const dmMessagesEndRef = useRef<HTMLDivElement>(null);
+  const chatBottomRef = useRef<HTMLDivElement>(null);
   const [communities, setCommunities] = useState<Community[]>([]); const [communityMembers, setCommunityMembers] = useState<CommunityMember[]>([]); const [selectedCommunity, setSelectedCommunity] = useState<Community | null>(null); const [showCreateCommunity, setShowCreateCommunity] = useState(false); const [showManageRequests, setShowManageRequests] = useState(false); const [creatingCommunity, setCreatingCommunity] = useState(false);
   const [newCommunityName, setNewCommunityName] = useState(""); const [newCommunityDesc, setNewCommunityDesc] = useState(""); const [newCommunityColor, setNewCommunityColor] = useState("#9B6BFF"); const [newCommunityPrivate, setNewCommunityPrivate] = useState(true);
   const [newGameName, setNewGameName] = useState(""); const [newGamePlatform, setNewGamePlatform] = useState(""); const [newGameType, setNewGameType] = useState("");
@@ -1799,6 +1801,21 @@ useEffect(() => {
     setSelectedCommunity(null); setShowCreateCommunity(false); setShowManageRequests(false);
   }
 
+  function enterSelectedSection() {
+    setInSection(true);
+    setTab("chat");
+    setSelectedCommunity(null);
+    setShowCreateCommunity(false);
+    setShowManageRequests(false);
+  }
+
+  function backToSections() {
+    setInSection(false);
+    setSelectedCommunity(null);
+    setShowCreateCommunity(false);
+    setShowManageRequests(false);
+  }
+
  async function uploadVideoFile(file: File): Promise<string | null> {
   const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
   const fn = `dm-videos/${Date.now()}-${safeName}`;
@@ -1821,6 +1838,8 @@ useEffect(() => {
     .getPublicUrl(fn)
     .data.publicUrl;
 }
+
+
 
   async function sendMessage() {
     if (!user || (!newMessage.trim() && !newMessageVideo)) return;
@@ -2055,6 +2074,14 @@ useEffect(() => {
   const messagesForSection = messages.filter((m) => m.section_id === selectedSubId);
   const videosForSection = videos.filter((v) => v.section_id === selectedSubId);
   const communitiesForSection = communities.filter((c) => c.section_id === selectedId);
+
+  useEffect(() => {
+  if (tab === "chat") {
+    setTimeout(() => {
+      chatBottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 100);
+  }
+}, [tab, messagesForSection.length]);
 
   const inputStyle = { width: "100%", padding: "10px 14px", borderRadius: "10px", border: "1px solid #1E1B2E", background: "#1A1726", color: "white", fontSize: "14px", outline: "none", boxSizing: "border-box" as const };
   const selectStyle = { ...inputStyle, cursor: "pointer" };
@@ -2428,15 +2455,71 @@ useEffect(() => {
         />
       )}
 
-             <MainSectionsCarousel
-  sections={sections}
-  selectedId={selectedId}
-  onSelect={selectSection}
-  dir={dir}
-/>
+      {!inSection ? (
+        <>
+          <MainSectionsCarousel
+            sections={sections}
+            selectedId={selectedId}
+            onSelect={selectSection}
+            dir={dir}
+          />
+          <div style={{ display: "flex", justifyContent: "center", marginTop: "-10px", marginBottom: "26px" }}>
+            <button
+              onClick={enterSelectedSection}
+              style={{
+                padding: "11px 28px",
+                borderRadius: "10px",
+                border: `1px solid ${selectedSection?.color || "#9B6BFF"}`,
+                background: `${selectedSection?.color || "#9B6BFF"}20`,
+                color: "white",
+                cursor: "pointer",
+                fontWeight: 800,
+                fontSize: "13px",
+                boxShadow: `0 0 20px ${(selectedSection?.color || "#9B6BFF")}45`,
+              }}
+            >
+              {dir === "rtl" ? `دخول إلى ${selectedSection?.name || "القسم"}` : `Enter ${selectedSection?.name || "Section"}`}
+            </button>
+          </div>
+        </>
+      ) : (
+        <>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "14px" }}>
+            <button
+              onClick={backToSections}
+              style={{
+                padding: "8px 12px",
+                borderRadius: "9px",
+                border: "1px solid #302A48",
+                background: "#171421",
+                color: "#9C97B8",
+                cursor: "pointer",
+                fontSize: "12px",
+              }}
+            >
+              {dir === "rtl" ? "← الأقسام" : "← Sections"}
+            </button>
+            <div
+              style={{
+  color: selectedSection?.color || "#9B6BFF",
+  fontSize: "28px",
+  fontWeight: 900,
+  textShadow: `0 0 12px ${selectedSection?.color || "#9B6BFF"}, 0 0 28px ${selectedSection?.color || "#9B6BFF"}55`,
+  letterSpacing: "0.5px",
+}}
+            >
+              {selectedSection?.icon} {selectedSection?.name}
+            </div>
+          </div>
 
+          
+        </>
+      )}
+
+      {inSection && (
+        <>
       {/* تبويبات */}
-      <div style={{ display: "flex", gap: "8px", marginBottom: "24px", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: "8px", marginBottom: "24px", flexWrap: "wrap" }}>
         {(["chat", "posts", "videos", "communities"] as const).map((tabKey) => (
           <button key={tabKey} onClick={() => { setTab(tabKey); setSelectedCommunity(null); setShowCreateCommunity(false); }} style={{ padding: "8px 20px", borderRadius: "8px", border: "none", background: tab === tabKey ? "#9B6BFF" : "#1A1826", color: tab === tabKey ? "#0A0910" : "#9C97B8", cursor: "pointer", fontWeight: tab === tabKey ? "bold" : "normal" }}>
             {t(tabKey === "chat" ? "tab_chat" : tabKey === "posts" ? "tab_posts" : tabKey === "videos" ? "tab_videos" : "tab_communities")}
@@ -2461,14 +2544,15 @@ useEffect(() => {
                 <div style={{ display: "flex", gap: "4px", marginTop: "4px", flexWrap: "wrap" }}>
                   {REACTION_EMOJIS.map((emoji) => {
                     const count = reactionCount(msg.id, emoji); const mine = hasReacted(msg.id, emoji);
-                    return <button key={emoji} onClick={() => toggleReaction(msg.id, emoji)} style={{ padding: "2px 6px", borderRadius: "10px", border: mine ? "1px solid #9B6BFF" : "1px solid #2E2A42", background: mine ? "#2A2340" : "#100F17", color: "#EDEAF6", fontSize: "12px", cursor: "pointer", display: "flex", alignItems: "center", gap: "3px" }}>{emoji}{count > 0 && <span style={{ fontSize: "11px", color: "#9C97B8" }}>{count}</span>}</button>;
-                  })}
-                </div>
-              </div>
-            ))}
-          </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: "8px", maxWidth: "460px" }}>
-            <div style={{ display: "flex", gap: "8px" }}>
+                return <button key={emoji} onClick={() => toggleReaction(msg.id, emoji)} style={{ padding: "2px 6px", borderRadius: "10px", border: mine ? "1px solid #9B6BFF" : "1px solid #2E2A42", background: mine ? "#2A2340" : "#100F17", color: "#EDEAF6", fontSize: "12px", cursor: "pointer", display: "flex", alignItems: "center", gap: "3px" }}>{emoji}{count > 0 && <span style={{ fontSize: "11px", color: "#9C97B8" }}>{count}</span>}</button>;
+           })}
+</div>
+</div>
+))}
+<div ref={chatBottomRef} />
+</div>
+<div style={{ display: "flex", flexDirection: "column", gap: "8px", maxWidth: "460px" }}>
+<div style={{ display: "flex", gap: "8px" }}>
               <input value={newMessage} onChange={(e) => setNewMessage(e.target.value)} onKeyDown={(e) => e.key === "Enter" && sendMessage()} placeholder={t("type_message_placeholder")} style={{ flex: 1, padding: "10px", borderRadius: "8px", border: "1px solid #2E2A42", background: "#1A1826", color: "white" }} />
               <button onClick={sendMessage} disabled={sendingMessage} style={{ padding: "10px 20px", borderRadius: "8px", border: "none", background: "#9B6BFF", color: "#0A0910", cursor: "pointer", opacity: sendingMessage ? 0.6 : 1 }}>{sendingMessage ? "..." : t("send")}</button>
             </div>
@@ -2480,7 +2564,69 @@ useEffect(() => {
       {/* ===== منشورات ===== */}
       {tab === "posts" && (
         <div>
-          <div style={{ display: "flex", flexDirection: "column", gap: "10px", maxWidth: "500px", marginBottom: "20px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "8px", maxWidth: "500px", marginBottom: "20px" }}>
+  <input
+    value={newPostTitle}
+    onChange={(e) => setNewPostTitle(e.target.value)}
+    placeholder={t("post_title_placeholder")}
+    style={{
+      padding: "10px",
+      borderRadius: "8px",
+      border: "1px solid #302B45",
+      background: "#0F0D16",
+      color: "white",
+    }}
+  />
+
+  <textarea
+    value={newPostBody}
+    onChange={(e) => setNewPostBody(e.target.value)}
+    placeholder={t("post_body_placeholder")}
+    style={{
+      padding: "10px",
+      borderRadius: "8px",
+      border: "1px solid #302B45",
+      background: "#0F0D16",
+      color: "white",
+      minHeight: "100px",
+      resize: "vertical",
+    }}
+  />
+
+  <input
+    type="file"
+    accept="video/*"
+    onChange={(e) => setNewPostVideo(e.target.files?.[0] || null)}
+    style={{ color: "white" }}
+  />
+
+  <label style={{ color: "#B9B4D0", fontSize: "13px" }}>
+    <input
+      type="checkbox"
+      checked={newPostIsPremium}
+      onChange={(e) => setNewPostIsPremium(e.target.checked)}
+    />
+    {" "}
+    {t("premium_only_checkbox_label")}
+  </label>
+
+  <button
+    onClick={addPost}
+    disabled={publishingPost}
+    style={{
+      padding: "10px",
+      borderRadius: "8px",
+      border: "none",
+      background: "#9B6BFF",
+      color: "white",
+      cursor: "pointer",
+    }}
+  >
+    {publishingPost ? t("publishing") : t("publish")}
+  </button>
+</div>
+        <div style={{ display: "flex", flexDirection: "column", gap: "8px", maxWidth: "500px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "10px", maxWidth: "500px", marginBottom: "20px" }}></div>        
             {postsForSection.length === 0 && <div style={{ color: "#635E80" }}>{t("no_posts")}</div>}
             {postsForSection.map((post) => {
               const locked = post.is_premium && !myProfile.is_premium && post.user_id !== user.id;
@@ -2525,17 +2671,7 @@ useEffect(() => {
               );
             })}
           </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: "8px", maxWidth: "500px" }}>
-            <input value={newPostTitle} onChange={(e) => setNewPostTitle(e.target.value)} placeholder={t("post_title_placeholder")} style={{ padding: "10px", borderRadius: "8px", border: "1px solid #2E2A42", background: "#1A1826", color: "white" }} />
-            <textarea value={newPostBody} onChange={(e) => setNewPostBody(e.target.value)} placeholder={t("post_body_placeholder")} rows={3} style={{ padding: "10px", borderRadius: "8px", border: "1px solid #2E2A42", background: "#1A1826", color: "white", fontFamily: "inherit" }} />
-            <input type="file" accept="video/*" onChange={(e) => setNewPostVideo(e.target.files?.[0] || null)} style={{ color: "#9C97B8", fontSize: "13px" }} />
-            <label style={{ display: "flex", alignItems: "center", gap: "6px", color: "#9C97B8", fontSize: "13px", cursor: "pointer" }}>
-              <input type="checkbox" checked={newPostIsPremium} onChange={(e) => setNewPostIsPremium(e.target.checked)} />
-              {t("premium_only_checkbox_label")}
-            </label>
-            <button onClick={addPost} disabled={publishingPost} style={{ padding: "10px 20px", borderRadius: "8px", border: "none", background: "#9B6BFF", color: "#0A0910", cursor: "pointer", alignSelf: "flex-start", opacity: publishingPost ? 0.6 : 1 }}>{publishingPost ? t("publishing") : t("publish")}</button>
-          </div>
-        </div>
+           </div>
       )}
 
     {/* ===== فيديوهات ===== */}
@@ -4472,6 +4608,9 @@ useEffect(() => {
     </div>
   </div>
 )}
+        </>
+      )}
+
     </main>
   );
 }
